@@ -1,0 +1,13 @@
+{
+  "name": "porter-daily-hub",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Porter's visual daily schedule and weekly print dashboard.",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "node-ical": "0.26.1"
+  }
+}
