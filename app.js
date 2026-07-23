@@ -8,32 +8,141 @@ const PERIODS = [
   { id: "evening", label: "EVENING", subtitle: "Dinner to 10:00 PM", startHour: 17, endHour: 22 }
 ];
 
+const PACKING_DEFAULTS = {
+  summer: [
+    "2 T-Shirts",
+    "2 Shorts",
+    "1 Sweatshirt",
+    "1 Pair of Pants",
+    "3 Pairs of Socks",
+    "3 Underwear",
+    "Pajamas",
+    "Toothbrush / Toothpaste",
+    "PILLS",
+    "Chargers",
+    "Stuffed Animal ONLY!",
+    "Book",
+    "Raincoat",
+    "Sandals",
+    "Swimsuit",
+    "Sunhat",
+    "Sunglasses"
+  ],
+  winter: [
+    "2 Shirts",
+    "2 Sweatshirts",
+    "2 Pairs of Pants",
+    "3 Underwear",
+    "3 Pairs of Socks",
+    "Pajamas",
+    "Toothbrush / Toothpaste",
+    "PILLS",
+    "Chargers",
+    "Stuffed Animal",
+    "Book",
+    "Winter Coat",
+    "Snow Pants",
+    "Gloves",
+    "Hat",
+    "Boots"
+  ]
+};
+
 const state = {
   selectedDate: dateKeyInTimeZone(new Date()),
   events: [],
   view: "daily",
   loading: false,
-  lastSynced: null
+  lastSynced: null,
+  packingSeason: safeStorageGet("porterPackingSeason") || "summer",
+  packingLists: {}
 };
+
+state.packingLists.summer = loadPackingList("summer");
+state.packingLists.winter = loadPackingList("winter");
 
 const els = {
   status: document.querySelector("#statusMessage"),
   dailyView: document.querySelector("#dailyView"),
   weekView: document.querySelector("#weekView"),
+  packingView: document.querySelector("#packingView"),
   dailyHeading: document.querySelector("#dailyHeading"),
-  liveClock: document.querySelector("#liveClock"),
   nowHeading: document.querySelector("#nowHeading"),
   nowDetails: document.querySelector("#nowDetails"),
+  prepSection: document.querySelector("#prepSection"),
+  prepHeading: document.querySelector("#prepHeading"),
+  prepDetails: document.querySelector("#prepDetails"),
+  prepChecklist: document.querySelector("#prepChecklist"),
   allDaySection: document.querySelector("#allDaySection"),
   allDayEvents: document.querySelector("#allDayEvents"),
   dailyTimeline: document.querySelector("#dailyTimeline"),
   weekRange: document.querySelector("#weekRange"),
   weekGrid: document.querySelector("#weekGrid"),
-  lastSynced: document.querySelector("#lastSynced")
+  lastSynced: document.querySelector("#lastSynced"),
+  packingSeasonLabel: document.querySelector("#packingSeasonLabel"),
+  packingProgress: document.querySelector("#packingProgress"),
+  packingList: document.querySelector("#packingList"),
+  addPackingForm: document.querySelector("#addPackingForm"),
+  newPackingItem: document.querySelector("#newPackingItem")
 };
 
 function pad(value) {
   return String(value).padStart(2, "0");
+}
+
+function safeStorageGet(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeStorageSet(key, value) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // The dashboard still works if local storage is unavailable.
+  }
+}
+
+function readStoredJson(key, fallback) {
+  const raw = safeStorageGet(key);
+  if (!raw) return fallback;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+function createListId() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function defaultPackingList(season) {
+  return PACKING_DEFAULTS[season].map((text) => ({
+    id: createListId(),
+    text,
+    checked: false
+  }));
+}
+
+function loadPackingList(season) {
+  const stored = readStoredJson(`porterPacking:${season}`, null);
+  if (!Array.isArray(stored)) return defaultPackingList(season);
+  return stored
+    .filter((item) => item && typeof item.text === "string")
+    .map((item) => ({
+      id: item.id || createListId(),
+      text: item.text.trim(),
+      checked: Boolean(item.checked)
+    }));
+}
+
+function savePackingList(season) {
+  safeStorageSet(`porterPacking:${season}`, JSON.stringify(state.packingLists[season]));
 }
 
 function dateKeyInTimeZone(date) {
@@ -234,9 +343,108 @@ function renderFreeCard(block) {
     </article>`;
 }
 
+function dayTimedEvents(dateKey) {
+  return eventsForDay(dateKey)
+    .filter((event) => !event.allDay)
+    .map((event) => ({ ...event, ...eventDates(event) }))
+    .sort((a, b) => a.start - b.start);
+}
+
+function focusEventForSelectedDay() {
+  const events = dayTimedEvents(state.selectedDate);
+  if (!events.length) return null;
+
+  if (state.selectedDate !== dateKeyInTimeZone(new Date())) return events[0];
+
+  const now = new Date();
+  return events.find((event) => event.start <= now && event.end > now)
+    || events.find((event) => event.start > now)
+    || null;
+}
+
+function checklistForTitle(title = "") {
+  const value = title.toLowerCase();
+
+  if (/(tae\s*kwon\s*do|taekwondo|\btkd\b)/i.test(value)) {
+    return {
+      heading: "TAEKWONDO READY CHECK",
+      items: [
+        "Check today's class type",
+        "Find the correct uniform",
+        "Get shoes",
+        "Find phone"
+      ]
+    };
+  }
+
+  if (/\bact\s+groups?\b/i.test(value) || value.includes("achieve collaborate treatment")) {
+    return {
+      heading: "ACT GROUP READY CHECK",
+      items: [
+        "Phone",
+        "Wallet",
+        "Weather-appropriate clothing",
+        "Put on shoes",
+        "Confirm shoes are good for walking"
+      ]
+    };
+  }
+
+  if (/\bwork\b/i.test(value) || value.includes("culver")) {
+    return {
+      heading: "WORK UNIFORM CHECK",
+      items: [
+        "Phone",
+        "Wallet",
+        "Uniform: Hat",
+        "Uniform: Shirt",
+        "Uniform: Pants",
+        "Uniform: Belt",
+        "🧦 Uniform: SOCKS",
+        "Uniform: Shoes"
+      ]
+    };
+  }
+
+  return null;
+}
+
+function prepStorageKey(event) {
+  return `porterPrep:${event.id}`;
+}
+
+function renderPrepPanel() {
+  const event = focusEventForSelectedDay();
+  const checklist = event ? checklistForTitle(event.title) : null;
+
+  if (!event || !checklist) {
+    els.prepSection.classList.add("is-hidden");
+    els.prepChecklist.innerHTML = "";
+    return;
+  }
+
+  const storageKey = prepStorageKey(event);
+  const checkedIndexes = new Set(readStoredJson(storageKey, []));
+
+  els.prepSection.classList.remove("is-hidden");
+  els.prepHeading.textContent = checklist.heading;
+  els.prepDetails.textContent = `${event.title} • ${formatTimeRange(event.start, event.end)}`;
+  els.prepChecklist.innerHTML = checklist.items.map((item, index) => {
+    const isChecked = checkedIndexes.has(index);
+    const itemClass = item.includes("SOCKS") ? " is-socks" : "";
+    return `
+      <label class="prep-item${itemClass}${isChecked ? " is-checked" : ""}">
+        <input type="checkbox" data-prep-key="${escapeHtml(storageKey)}" data-prep-index="${index}" ${isChecked ? "checked" : ""}>
+        <span class="custom-check" aria-hidden="true"></span>
+        <span>${escapeHtml(item)}</span>
+      </label>`;
+  }).join("");
+}
+
 function renderDailyView() {
   els.dailyHeading.textContent = formatDateHeading(state.selectedDate).toUpperCase();
   renderNowPanel();
+  renderPrepPanel();
   renderAllDayEvents();
 
   els.dailyTimeline.innerHTML = PERIODS.map((period) => {
@@ -266,10 +474,7 @@ function renderAllDayEvents() {
 
 function renderNowPanel() {
   const today = dateKeyInTimeZone(new Date());
-  const dayEvents = eventsForDay(state.selectedDate)
-    .filter((event) => !event.allDay)
-    .map((event) => ({ ...event, ...eventDates(event) }))
-    .sort((a, b) => a.start - b.start);
+  const dayEvents = dayTimedEvents(state.selectedDate);
 
   if (state.selectedDate !== today) {
     if (!dayEvents.length) {
@@ -358,18 +563,40 @@ function renderWeekView() {
   }).join("");
 }
 
-function render() {
-  renderClock();
-  renderDailyView();
-  renderWeekView();
+function packingItemClass(text) {
+  const value = text.toUpperCase();
+  if (value.includes("PILLS")) return " is-pills";
+  if (value.includes("STUFFED ANIMAL")) return " is-stuffed";
+  if (value.includes("SOCK")) return " is-socks";
+  return "";
 }
 
-function renderClock() {
-  els.liveClock.textContent = new Intl.DateTimeFormat("en-US", {
-    timeZone: TIME_ZONE,
-    hour: "numeric",
-    minute: "2-digit"
-  }).format(new Date());
+function renderPackingView() {
+  const season = state.packingSeason;
+  const list = state.packingLists[season];
+  const checkedCount = list.filter((item) => item.checked).length;
+
+  document.querySelectorAll("[data-season]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.season === season);
+  });
+
+  els.packingSeasonLabel.textContent = `${season.toUpperCase()} PACKING LIST`;
+  els.packingProgress.textContent = `${checkedCount} / ${list.length} PACKED`;
+  els.packingList.innerHTML = list.map((item) => `
+    <div class="packing-item${packingItemClass(item.text)}${item.checked ? " is-checked" : ""}" data-packing-id="${escapeHtml(item.id)}">
+      <label>
+        <input type="checkbox" ${item.checked ? "checked" : ""}>
+        <span class="custom-check" aria-hidden="true"></span>
+        <span class="packing-text">${escapeHtml(item.text)}</span>
+      </label>
+      <button type="button" class="delete-packing-item" aria-label="Remove ${escapeHtml(item.text)}">×</button>
+    </div>`).join("");
+}
+
+function render() {
+  renderDailyView();
+  renderWeekView();
+  renderPackingView();
 }
 
 function setStatus(message, type = "loading") {
@@ -412,6 +639,7 @@ function setView(view) {
   state.view = view;
   els.dailyView.classList.toggle("is-hidden", view !== "daily");
   els.weekView.classList.toggle("is-hidden", view !== "week");
+  els.packingView.classList.toggle("is-hidden", view !== "packing");
   document.querySelectorAll("[data-view]").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.view === view);
   });
@@ -420,6 +648,14 @@ function setView(view) {
 function printWeek() {
   setView("week");
   renderWeekView();
+  document.body.classList.add("print-week");
+  window.setTimeout(() => window.print(), 120);
+}
+
+function printPacking() {
+  setView("packing");
+  renderPackingView();
+  document.body.classList.add("print-packing");
   window.setTimeout(() => window.print(), 120);
 }
 
@@ -444,9 +680,79 @@ document.querySelector("#goToday").addEventListener("click", async () => {
 
 document.querySelector("#printWeek").addEventListener("click", printWeek);
 document.querySelector("#printFromWeek").addEventListener("click", printWeek);
+document.querySelector("#printPacking").addEventListener("click", printPacking);
+
+els.prepChecklist.addEventListener("change", (event) => {
+  const input = event.target.closest("input[type='checkbox'][data-prep-key]");
+  if (!input) return;
+  const key = input.dataset.prepKey;
+  const index = Number(input.dataset.prepIndex);
+  const checked = new Set(readStoredJson(key, []));
+  if (input.checked) checked.add(index);
+  else checked.delete(index);
+  safeStorageSet(key, JSON.stringify([...checked]));
+  input.closest(".prep-item")?.classList.toggle("is-checked", input.checked);
+});
+
+document.querySelectorAll("[data-season]").forEach((button) => {
+  button.addEventListener("click", () => {
+    state.packingSeason = button.dataset.season;
+    safeStorageSet("porterPackingSeason", state.packingSeason);
+    renderPackingView();
+  });
+});
+
+els.packingList.addEventListener("change", (event) => {
+  const input = event.target.closest("input[type='checkbox']");
+  if (!input) return;
+  const row = input.closest("[data-packing-id]");
+  const item = state.packingLists[state.packingSeason].find((entry) => entry.id === row?.dataset.packingId);
+  if (!item) return;
+  item.checked = input.checked;
+  savePackingList(state.packingSeason);
+  renderPackingView();
+});
+
+els.packingList.addEventListener("click", (event) => {
+  const button = event.target.closest(".delete-packing-item");
+  if (!button) return;
+  const row = button.closest("[data-packing-id]");
+  state.packingLists[state.packingSeason] = state.packingLists[state.packingSeason]
+    .filter((item) => item.id !== row?.dataset.packingId);
+  savePackingList(state.packingSeason);
+  renderPackingView();
+});
+
+els.addPackingForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const text = els.newPackingItem.value.trim();
+  if (!text) return;
+  state.packingLists[state.packingSeason].push({
+    id: createListId(),
+    text,
+    checked: false
+  });
+  savePackingList(state.packingSeason);
+  els.newPackingItem.value = "";
+  renderPackingView();
+  els.newPackingItem.focus();
+});
+
+document.querySelector("#resetPacking").addEventListener("click", () => {
+  const seasonName = state.packingSeason === "summer" ? "summer" : "winter";
+  const okay = window.confirm(`Reset the ${seasonName} list to the original items and uncheck everything?`);
+  if (!okay) return;
+  state.packingLists[state.packingSeason] = defaultPackingList(state.packingSeason);
+  savePackingList(state.packingSeason);
+  renderPackingView();
+});
+
+window.addEventListener("afterprint", () => {
+  document.body.classList.remove("print-week", "print-packing");
+});
 
 window.addEventListener("focus", () => loadCalendar({ quiet: true }));
-setInterval(renderClock, 30_000);
 setInterval(() => loadCalendar({ quiet: true }), 5 * 60_000);
 
+renderPackingView();
 loadCalendar();
