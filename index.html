@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#16131f">
-  <meta name="description" content="Porter's visual daily schedule and weekly planning dashboard.">
+  <meta name="theme-color" content="#9c59d1">
+  <meta name="description" content="Porter's visual daily schedule, preparation checklists, and weekend packing dashboard.">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <title>Porter's Day Arc</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +20,7 @@
     <div class="hero-grid">
       <div>
         <h1>PORTER'S<br><span>DAY ARC</span></h1>
-        <p class="hero-subtitle">Appointments, open time, and the next thing. One panel at a time.</p>
+        <p class="hero-subtitle">Appointments, open time, preparation, and packing. One panel at a time.</p>
       </div>
       <div class="speech-bubble" aria-hidden="true">
         <strong>WHAT'S<br>NEXT?</strong>
@@ -30,6 +30,7 @@
     <nav class="view-switcher" aria-label="Dashboard views">
       <button class="view-button is-active" type="button" data-view="daily">TODAY'S ARC</button>
       <button class="view-button" type="button" data-view="week">WEEK MAP</button>
+      <button class="view-button" type="button" data-view="packing">PACKING LIST</button>
       <button class="view-button print-button" type="button" id="printWeek">PRINT THE WEEK</button>
     </nav>
   </header>
@@ -54,7 +55,15 @@
           <h3 id="nowHeading">Reading the timeline…</h3>
           <p id="nowDetails">Just a moment while the calendar powers up.</p>
         </div>
-        <div class="clock-burst" id="liveClock" aria-label="Current time">--:--</div>
+      </section>
+
+      <section id="prepSection" class="prep-panel manga-panel is-hidden" aria-labelledby="prepHeading">
+        <div class="prep-intro">
+          <span class="scene-label">BEFORE YOU GO</span>
+          <h3 id="prepHeading">Get ready checklist</h3>
+          <p id="prepDetails"></p>
+        </div>
+        <div id="prepChecklist" class="prep-checklist"></div>
       </section>
 
       <section id="allDaySection" class="all-day-panel manga-panel is-hidden" aria-labelledby="allDayHeading">
@@ -81,6 +90,42 @@
       </div>
       <div id="weekGrid" class="week-grid" aria-label="Weekly schedule"></div>
       <p class="print-note">Printed from Porter Daily Hub • Times shown in Central Time</p>
+    </section>
+
+    <section id="packingView" class="dashboard-view is-hidden" aria-labelledby="packingHeading">
+      <div class="packing-heading manga-panel">
+        <div>
+          <span class="scene-label">WEEKEND QUEST</span>
+          <h2 id="packingHeading">PACK THE BAG!</h2>
+          <p>Check things off as they go into the bag. Added items stay on this device.</p>
+        </div>
+        <div class="packing-actions">
+          <button type="button" class="today-button" id="printPacking">PRINT LIST</button>
+          <button type="button" class="secondary-button" id="resetPacking">RESET SEASON</button>
+        </div>
+      </div>
+
+      <div class="season-toggle manga-panel" role="group" aria-label="Packing season">
+        <button type="button" class="season-button is-active" data-season="summer">☀ SUMMER</button>
+        <button type="button" class="season-button" data-season="winter">❄ WINTER</button>
+      </div>
+
+      <section class="packing-panel manga-panel">
+        <div class="packing-panel-title">
+          <span id="packingSeasonLabel">SUMMER PACKING LIST</span>
+          <strong id="packingProgress">0 / 0 PACKED</strong>
+        </div>
+        <div id="packingList" class="packing-list"></div>
+
+        <form id="addPackingForm" class="add-packing-form">
+          <label for="newPackingItem">ADD ANOTHER THING</label>
+          <div>
+            <input id="newPackingItem" name="newPackingItem" type="text" maxlength="80" placeholder="Type an item…" autocomplete="off" required>
+            <button type="submit" class="today-button">ADD ITEM</button>
+          </div>
+        </form>
+      </section>
+      <p class="print-note">Porter's weekend packing list • Check every box before leaving</p>
     </section>
   </main>
 
