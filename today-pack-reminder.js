@@ -1,66 +1,92 @@
 (() => {
-  const TIME_ZONE = 'America/Chicago';
-  const ACTIVE_DATE = '2026-07-24';
-  const STORAGE_KEY = `porterPackReminder:${ACTIVE_DATE}`;
-
-  const localDateKey = () => {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: TIME_ZONE,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).formatToParts(new Date());
-    const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-    return `${values.year}-${values.month}-${values.day}`;
-  };
+  const PACKING_TITLE_PATTERN = /\b(pack|packing)\b/i;
 
   const addStyles = () => {
-    if (document.getElementById('todayPackReminderStyles')) return;
+    if (document.getElementById('calendarPackingSpotlightStyles')) return;
     const style = document.createElement('style');
-    style.id = 'todayPackReminderStyles';
+    style.id = 'calendarPackingSpotlightStyles';
     style.textContent = `
-      .pack-reminder-card {
-        border: 3px solid #1b1722;
-        box-shadow: 6px 6px 0 #1b1722;
-        background: linear-gradient(135deg, #fff430 0 68%, #9c59d1 68% 100%);
-        padding: 16px;
-        margin-bottom: 14px;
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 14px;
-        align-items: center;
+      .calendar-packing-spotlight {
+        border: 5px solid #1b1722;
+        box-shadow: 10px 10px 0 #1b1722;
+        background:
+          radial-gradient(circle at 90% 10%, rgba(255,255,255,.62) 0 7%, transparent 7.5%),
+          linear-gradient(135deg, #fff430 0 63%, #9c59d1 63% 100%);
+        padding: clamp(20px, 4vw, 34px);
+        margin: 24px 0 30px;
+        position: relative;
+        overflow: hidden;
       }
-      .pack-reminder-card.is-complete { opacity: .68; }
-      .pack-reminder-check {
-        width: 30px;
-        height: 30px;
-        accent-color: #9c59d1;
-        cursor: pointer;
-      }
-      .pack-reminder-copy strong {
-        display: block;
+      .calendar-packing-spotlight::after {
+        content: 'PACK!';
+        position: absolute;
+        right: -8px;
+        top: -14px;
         font-family: 'Bangers', system-ui, sans-serif;
-        font-size: clamp(1.45rem, 3vw, 2rem);
-        letter-spacing: .03em;
+        font-size: clamp(4.4rem, 11vw, 8.5rem);
         line-height: 1;
+        color: rgba(27, 23, 34, .12);
+        transform: rotate(7deg);
+        pointer-events: none;
       }
-      .pack-reminder-copy p { margin: 6px 0 12px; font-weight: 800; }
-      .pack-reminder-link {
+      .calendar-packing-kicker {
         display: inline-block;
         border: 3px solid #1b1722;
         background: #fff;
+        padding: 5px 10px;
+        font-weight: 1000;
+        letter-spacing: .08em;
+        margin-bottom: 12px;
+      }
+      .calendar-packing-spotlight h3 {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        font-family: 'Bangers', system-ui, sans-serif;
+        font-size: clamp(2.6rem, 7vw, 5.5rem);
+        letter-spacing: .025em;
+        line-height: .95;
+        max-width: 820px;
+      }
+      .calendar-packing-time {
+        position: relative;
+        z-index: 1;
+        display: block;
+        margin: 12px 0 18px;
+        font-size: clamp(1.15rem, 2.5vw, 1.65rem);
+        font-weight: 1000;
+      }
+      .calendar-packing-spotlight p {
+        position: relative;
+        z-index: 1;
+        max-width: 720px;
+        margin: 0 0 18px;
+        font-size: 1.05rem;
+        font-weight: 850;
+      }
+      .calendar-packing-button {
+        position: relative;
+        z-index: 2;
+        display: inline-block;
+        border: 4px solid #1b1722;
+        background: #fff;
         color: #1b1722;
-        box-shadow: 4px 4px 0 #1b1722;
-        padding: 9px 13px;
-        font-weight: 900;
+        box-shadow: 6px 6px 0 #1b1722;
+        padding: 12px 18px;
+        font: 1000 1rem/1 'Nunito', system-ui, sans-serif;
         text-decoration: none;
         cursor: pointer;
       }
-      .pack-reminder-link:hover,
-      .pack-reminder-link:focus-visible { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 #1b1722; }
-      @media (max-width: 560px) {
-        .pack-reminder-card { grid-template-columns: 1fr; }
+      .calendar-packing-button:hover,
+      .calendar-packing-button:focus-visible {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 #1b1722;
       }
+      .event-card.is-packing-event {
+        background: #fff430;
+        border-width: 4px;
+      }
+      .event-card.is-packing-event .event-title::before { content: '🧳 '; }
     `;
     document.head.appendChild(style);
   };
@@ -68,52 +94,60 @@
   const openPackingList = () => {
     const packingButton = document.querySelector('[data-view="packing"]');
     if (packingButton) packingButton.click();
-    document.getElementById('packingView')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.setTimeout(() => {
+      document.getElementById('packingView')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 20);
   };
 
-  const insertReminder = () => {
-    if (localDateKey() !== ACTIVE_DATE) return;
-    if (document.getElementById('todayPackReminder')) return;
+  const findPackingEventCard = () => Array.from(document.querySelectorAll('#dailyTimeline .event-card')).find((card) =>
+    PACKING_TITLE_PATTERN.test(card.querySelector('.event-title')?.textContent || '')
+  );
 
-    const morningPanel = Array.from(document.querySelectorAll('.time-panel')).find((panel) =>
-      /morning/i.test(panel.querySelector('h3')?.textContent || '')
-    );
-    const target = morningPanel?.querySelector('.panel-content');
-    if (!target) return;
+  const syncPackingSpotlight = () => {
+    const existing = document.getElementById('calendarPackingSpotlight');
+    const eventCard = findPackingEventCard();
 
-    addStyles();
-    const checked = window.localStorage.getItem(STORAGE_KEY) === 'done';
-    const card = document.createElement('div');
-    card.id = 'todayPackReminder';
-    card.className = `pack-reminder-card${checked ? ' is-complete' : ''}`;
-    card.innerHTML = `
-      <input class="pack-reminder-check" type="checkbox" ${checked ? 'checked' : ''} aria-label="Mark packing complete">
-      <div class="pack-reminder-copy">
-        <strong>${checked ? 'PACKING COMPLETE!' : 'PACK FOR THE WEEKEND'}</strong>
-        <p>${checked ? 'Quest cleared. Nice work.' : 'Use the packing list so nothing important gets left behind.'}</p>
-        <button type="button" class="pack-reminder-link">OPEN PACKING LIST →</button>
-      </div>
-    `;
-
-    const checkbox = card.querySelector('.pack-reminder-check');
-    const heading = card.querySelector('strong');
-    const text = card.querySelector('p');
-    checkbox.addEventListener('change', () => {
-      window.localStorage.setItem(STORAGE_KEY, checkbox.checked ? 'done' : 'open');
-      card.classList.toggle('is-complete', checkbox.checked);
-      heading.textContent = checkbox.checked ? 'PACKING COMPLETE!' : 'PACK FOR THE WEEKEND';
-      text.textContent = checkbox.checked ? 'Quest cleared. Nice work.' : 'Use the packing list so nothing important gets left behind.';
+    document.querySelectorAll('#dailyTimeline .event-card').forEach((card) => {
+      const isPacking = PACKING_TITLE_PATTERN.test(card.querySelector('.event-title')?.textContent || '');
+      card.classList.toggle('is-packing-event', isPacking);
     });
-    card.querySelector('.pack-reminder-link').addEventListener('click', openPackingList);
 
-    target.prepend(card);
+    if (!eventCard) {
+      existing?.remove();
+      return;
+    }
+
+    const title = eventCard.querySelector('.event-title')?.textContent?.trim() || 'Packing';
+    const time = eventCard.querySelector('.event-time')?.textContent?.trim() || '';
+
+    if (existing?.dataset.title === title && existing?.dataset.time === time) return;
+    existing?.remove();
+    addStyles();
+
+    const card = document.createElement('section');
+    card.id = 'calendarPackingSpotlight';
+    card.className = 'calendar-packing-spotlight';
+    card.dataset.title = title;
+    card.dataset.time = time;
+    card.setAttribute('aria-label', `${title} packing reminder`);
+    card.innerHTML = `
+      <span class="calendar-packing-kicker">TODAY'S MAIN QUEST</span>
+      <h3>${title.replace(/[&<>"']/g, (character) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[character]))}</h3>
+      <span class="calendar-packing-time">${time}</span>
+      <p>Use the checklist while items go into the bag. When every item is checked, Mom and Dad will be notified.</p>
+      <button type="button" class="calendar-packing-button">OPEN PACKING LIST →</button>
+    `;
+    card.querySelector('.calendar-packing-button').addEventListener('click', openPackingList);
+
+    const nowPanel = document.querySelector('#dailyView .now-panel');
+    if (nowPanel) nowPanel.insertAdjacentElement('afterend', card);
   };
 
   const start = () => {
-    insertReminder();
+    syncPackingSpotlight();
     const timeline = document.getElementById('dailyTimeline');
     if (!timeline) return;
-    new MutationObserver(insertReminder).observe(timeline, { childList: true, subtree: true });
+    new MutationObserver(syncPackingSpotlight).observe(timeline, { childList: true, subtree: true, characterData: true });
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
