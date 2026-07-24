@@ -171,6 +171,7 @@
           <strong id="packingProgress">0 / 0 PACKED</strong>
         </div>
         <div id="packingList" class="packing-list"></div>
+        <p id="packingEmailStatus" class="shared-card-status" role="status" aria-live="polite">An email will be sent when every item is checked.</p>
 
         <form id="addPackingForm" class="add-packing-form">
           <label for="newPackingItem">ADD ANOTHER THING</label>
@@ -184,6 +185,16 @@
     </section>
   </main>
 
+  <form name="porter-packing-complete" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="porter-packing-complete">
+    <input type="hidden" name="subject" value="Porter has completed their packing">
+    <input type="hidden" name="message" value="Porter has completed their packing.">
+    <input type="hidden" name="season">
+    <input type="hidden" name="recipients">
+    <input type="hidden" name="completed_at">
+    <label>Do not fill this out: <input name="bot-field"></label>
+  </form>
+
   <footer class="site-footer shell">
     <span>PORTER DAILY HUB</span>
     <span id="lastSynced">Waiting for calendar sync</span>
@@ -195,5 +206,6 @@
   <script src="week-navigation.js"></script>
   <script src="shared-skill.js"></script>
   <script src="today-pack-reminder.js"></script>
+  <script src="packing-completion-email.js"></script>
 </body>
 </html>
