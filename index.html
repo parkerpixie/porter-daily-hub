@@ -4,13 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#9c59d1">
-  <meta name="description" content="Porter's visual daily schedule, preparation checklists, and weekend packing dashboard.">
+  <meta name="description" content="Porter's visual daily schedule, shared oracle skill, preparation checklists, and weekend packing dashboard.">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <title>Porter's Day Arc</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="shared-skill.css">
 </head>
 <body>
   <div class="speed-lines" aria-hidden="true"></div>
@@ -20,7 +21,7 @@
     <div class="hero-grid">
       <div>
         <h1>PORTER'S<br><span>DAY ARC</span></h1>
-        <p class="hero-subtitle">Appointments, open time, preparation, and packing. One panel at a time.</p>
+        <p class="hero-subtitle">Appointments, open time, shared skills, preparation, and packing. One panel at a time.</p>
       </div>
       <div class="speech-bubble" aria-hidden="true">
         <strong>WHAT'S<br>NEXT?</strong>
@@ -29,6 +30,7 @@
 
     <nav class="view-switcher" aria-label="Dashboard views">
       <button class="view-button is-active" type="button" data-view="daily">TODAY'S ARC</button>
+      <button class="view-button" type="button" id="sharedSkillNav">SHARED SKILL</button>
       <button class="view-button" type="button" data-view="week">WEEK MAP</button>
       <button class="view-button" type="button" data-view="packing">PACKING LIST</button>
       <button class="view-button print-button" type="button" id="printWeek">PRINT THE WEEK</button>
@@ -77,6 +79,54 @@
       </section>
 
       <div id="dailyTimeline" class="timeline-grid" aria-label="Morning, afternoon, and evening schedule"></div>
+    </section>
+
+    <section id="sharedSkillView" class="dashboard-view is-hidden" aria-labelledby="sharedSkillHeading">
+      <div class="shared-skill-heading manga-panel">
+        <div>
+          <span class="scene-label">YOU + MOM</span>
+          <h2 id="sharedSkillHeading">TODAY'S SHARED SKILL</h2>
+          <p>The same Spirit Animal card appears in Mom's Morning Intelligence Report.</p>
+        </div>
+        <button type="button" class="today-button" id="todaySharedCard" hidden>TODAY'S CARD</button>
+      </div>
+
+      <div class="shared-skill-grid">
+        <section class="shared-card-panel manga-panel" aria-label="Spirit Animal card">
+          <div class="shared-card-frame">
+            <img id="sharedSkillImage" src="" alt="Loading today's Spirit Animal card">
+          </div>
+          <div class="shared-card-meta">
+            <div>
+              <strong id="sharedSkillAnimal">CONSULTING THE ANIMAL COUNCIL…</strong>
+              <p id="sharedSkillMessage">Finding today's shared card.</p>
+            </div>
+            <div class="shared-card-actions">
+              <button type="button" class="shared-card-button" id="downloadSharedSkill">DOWNLOAD CARD</button>
+            </div>
+          </div>
+          <p class="shared-card-status" id="sharedSkillStatus" role="status" aria-live="polite">Loading the same card Mom has today…</p>
+          <div class="shared-explore" aria-label="Explore Spirit Animal cards">
+            <button type="button" class="icon-button" id="previousSharedCard" aria-label="Previous card">‹</button>
+            <span id="sharedExploreLabel">CARD LIBRARY</span>
+            <button type="button" class="icon-button" id="nextSharedCard" aria-label="Next card">›</button>
+          </div>
+        </section>
+
+        <aside class="shared-wisdom-panel manga-panel" aria-labelledby="sharedWisdomHeading">
+          <span class="scene-label">PORTER'S FIELD GUIDE</span>
+          <h3 id="sharedWisdomHeading">What this means</h3>
+          <p id="sharedSkillMeaning">Loading a practical version of today's skill.</p>
+
+          <h3>How to practice this skill today</h3>
+          <ul class="skill-practice-list" id="sharedSkillPractice">
+            <li>Notice one moment when the skill might help.</li>
+          </ul>
+
+          <h3>If today gets hard…</h3>
+          <p class="skill-reset" id="sharedSkillReset">You only have to practice, not perform it perfectly.</p>
+        </aside>
+      </div>
     </section>
 
     <section id="weekView" class="dashboard-view is-hidden" aria-labelledby="weekHeading">
@@ -143,5 +193,6 @@
   <script src="packing-copy-fix.js"></script>
   <script type="module" src="app.js"></script>
   <script src="week-navigation.js"></script>
+  <script src="shared-skill.js"></script>
 </body>
 </html>
