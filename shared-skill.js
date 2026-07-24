@@ -2,9 +2,8 @@
   const SOURCE = 'https://mymorningintelligencereport.netlify.app/';
   const TIME_ZONE = 'America/Chicago';
 
-  // This mirrors the Morning Intelligence Report's matched reflection-card pool.
-  // Keeping the small index here avoids a cross-origin JSON request while the
-  // actual card images still come from the Morning Report's published assets.
+  // This mirrors the Morning Intelligence Report's current matched reflection-card pool.
+  // Otter is intentionally excluded because its paired oracle card is disabled there.
   const CARD_LIBRARY = [
     ['badger','Badger','I stay grounded'],
     ['beaver','Beaver','I shape my environment'],
@@ -28,7 +27,6 @@
     ['moose','Moose','I am allowed to take up space'],
     ['moth','Moth','I can exist in the in-between'],
     ['octopus','Octopus','I can pause, pivot and proceed'],
-    ['otter','Otter','Joy is a form of wisdom'],
     ['owl','Owl','I move with awareness'],
     ['panther','Panther','I do not wait for permission'],
     ['peacock','Peacock',"I shine because I'm real"],
