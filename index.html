@@ -86,7 +86,12 @@
           <h2 id="weekHeading">PORTER'S WEEK ARC</h2>
           <p id="weekRange">Loading the week…</p>
         </div>
-        <button type="button" class="today-button" id="printFromWeek">PRINT THIS PAGE</button>
+        <div class="packing-actions" aria-label="Week navigation">
+          <button type="button" class="icon-button" id="previousWeek" aria-label="Previous week">‹</button>
+          <button type="button" class="today-button" id="thisWeek">THIS WEEK</button>
+          <button type="button" class="icon-button" id="nextWeek" aria-label="Next week">›</button>
+          <button type="button" class="today-button" id="printFromWeek">PRINT THIS PAGE</button>
+        </div>
       </div>
       <div id="weekGrid" class="week-grid" aria-label="Weekly schedule"></div>
       <p class="print-note">Printed from Porter Daily Hub • Times shown in Central Time</p>
@@ -137,5 +142,6 @@
   <noscript>This dashboard needs JavaScript turned on to read and organize the calendar.</noscript>
   <script src="packing-copy-fix.js"></script>
   <script type="module" src="app.js"></script>
+  <script src="week-navigation.js"></script>
 </body>
 </html>
