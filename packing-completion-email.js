@@ -27,11 +27,25 @@
       if (value) window.localStorage.setItem(storageKey(season), "true");
       else window.localStorage.removeItem(storageKey(season));
     } catch {
-      // The email still attempts to send if storage is unavailable.
+      // The checklist still works if storage is unavailable.
     }
   };
 
   const visibleCheckboxes = () => [...list.querySelectorAll("input[type='checkbox']")];
+
+  const updateStatus = () => {
+    const checkboxes = visibleCheckboxes();
+    const season = currentSeason();
+    if (!checkboxes.length) return;
+
+    const checkedCount = checkboxes.filter((box) => box.checked).length;
+    if (checkedCount === 0) {
+      writeSent(season, false);
+      if (status) status.textContent = "An email will be sent when every item is checked.";
+    } else if (checkedCount < checkboxes.length && status && !readSent(season)) {
+      status.textContent = "An email will be sent when every item is checked.";
+    }
+  };
 
   const postCompletion = async (season) => {
     if (readSent(season)) return;
@@ -64,35 +78,39 @@
     }
   };
 
-  const checkCompletion = () => {
-    const checkboxes = visibleCheckboxes();
-    if (!checkboxes.length) return;
+  list.addEventListener("change", (event) => {
+    const changedBox = event.target.closest("input[type='checkbox']");
+    if (!changedBox) return;
 
-    const season = currentSeason();
-    const checkedCount = checkboxes.filter((box) => box.checked).length;
-    const allChecked = checkedCount === checkboxes.length;
-    const noneChecked = checkedCount === 0;
+    window.setTimeout(() => {
+      const checkboxes = visibleCheckboxes();
+      const season = currentSeason();
+      if (!checkboxes.length) return;
 
-    if (noneChecked) {
-      writeSent(season, false);
-      if (status) status.textContent = "An email will be sent when every item is checked.";
-      return;
-    }
+      const checkedCount = checkboxes.filter((box) => box.checked).length;
+      const allChecked = checkedCount === checkboxes.length;
 
-    if (allChecked) postCompletion(season);
-    else if (status && !readSent(season)) {
-      status.textContent = "An email will be sent when every item is checked.";
-    }
-  };
-
-  list.addEventListener("change", () => window.setTimeout(checkCompletion, 0));
-  document.querySelectorAll("[data-season]").forEach((button) => {
-    button.addEventListener("click", () => window.setTimeout(checkCompletion, 0));
+      // A notification may only be triggered by the user actively checking
+      // the final remaining item. Page loads, rerenders, resets, and season
+      // changes can update the status but can never send an email.
+      if (changedBox.checked && allChecked) postCompletion(season);
+      else updateStatus();
+    }, 0);
   });
-  resetButton?.addEventListener("click", () => window.setTimeout(checkCompletion, 50));
 
-  const observer = new MutationObserver(() => window.setTimeout(checkCompletion, 0));
+  document.querySelectorAll("[data-season]").forEach((button) => {
+    button.addEventListener("click", () => window.setTimeout(updateStatus, 0));
+  });
+
+  resetButton?.addEventListener("click", () => {
+    window.setTimeout(() => {
+      writeSent(currentSeason(), false);
+      updateStatus();
+    }, 75);
+  });
+
+  const observer = new MutationObserver(() => window.setTimeout(updateStatus, 0));
   observer.observe(list, { childList: true, subtree: true });
 
-  window.setTimeout(checkCompletion, 0);
+  window.setTimeout(updateStatus, 0);
 })();
