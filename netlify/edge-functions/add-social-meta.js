@@ -36,7 +36,7 @@ export default async (request, context) => {
   }
 
   const headers = new Headers(response.headers);
-  headers.set("content-length", new TextEncoder().encode(html).length.toString());
+  headers.delete("content-length");
 
   return new Response(html, {
     status: response.status,
