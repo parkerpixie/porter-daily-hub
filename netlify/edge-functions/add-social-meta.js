@@ -1,11 +1,16 @@
+import iconPart1 from "../functions/porter-icon-part-1.js";
+import iconPart2 from "../functions/porter-icon-part-2.js";
+import iconPart3 from "../functions/porter-icon-part-3.js";
+
 const SITE_URL = "https://porterdailyhub.netlify.app/";
 const ICON_URL = `${SITE_URL}porter-day-arc-icon.png?v=20260802`;
+const INLINE_ICON_URL = `data:image/png;base64,${iconPart1}${iconPart2}${iconPart3}`;
 const DESCRIPTION = "Porter's visual daily hub for schedules, shared skills, preparation checklists, weekly planning, and packing.";
 
 const MASCOT_MARKUP = `
       <div class="hero-mascot-card">
         <img
-          src="/porter-day-arc-icon.png?v=20260802"
+          src="${INLINE_ICON_URL}"
           alt="Porter's orangutan mascot reaching through a leafy jungle"
           width="192"
           height="192"
