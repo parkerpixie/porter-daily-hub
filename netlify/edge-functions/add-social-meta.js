@@ -1,16 +1,11 @@
-import iconPart1 from "../functions/porter-icon-part-1.js";
-import iconPart2 from "../functions/porter-icon-part-2.js";
-import iconPart3 from "../functions/porter-icon-part-3.js";
-
 const SITE_URL = "https://porterdailyhub.netlify.app/";
-const ICON_URL = `${SITE_URL}porter-day-arc-icon.png?v=20260802`;
-const INLINE_ICON_URL = `data:image/png;base64,${iconPart1}${iconPart2}${iconPart3}`;
+const ICON_URL = "https://raw.githubusercontent.com/parkerpixie/porter-daily-hub/main/netlify/functions/porter-orangutan-mascot.png";
 const DESCRIPTION = "Porter's visual daily hub for schedules, shared skills, preparation checklists, weekly planning, and packing.";
 
 const MASCOT_MARKUP = `
       <div class="hero-mascot-card">
         <img
-          src="${INLINE_ICON_URL}"
+          src="${ICON_URL}"
           alt="Porter's orangutan mascot reaching through a leafy jungle"
           width="192"
           height="192"
@@ -70,8 +65,8 @@ export default async (request, context) => {
 
   let html = await response.text();
   const socialTags = `
-  <link rel="icon" type="image/png" sizes="192x192" href="/porter-day-arc-icon.png?v=20260802">
-  <link rel="apple-touch-icon" sizes="192x192" href="/porter-day-arc-icon.png?v=20260802">
+  <link rel="icon" type="image/png" sizes="1024x1024" href="${ICON_URL}">
+  <link rel="apple-touch-icon" sizes="1024x1024" href="${ICON_URL}">
   <link rel="manifest" href="/site.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Porter's Day Arc">
@@ -81,8 +76,8 @@ export default async (request, context) => {
   <meta property="og:image" content="${ICON_URL}">
   <meta property="og:image:secure_url" content="${ICON_URL}">
   <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="192">
-  <meta property="og:image:height" content="192">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1024">
   <meta property="og:image:alt" content="An orangutan reaching through a leafy jungle, the app icon for Porter's Day Arc.">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Porter's Day Arc">
