@@ -7,8 +7,8 @@ const MASCOT_MARKUP = `
         <img
           src="${ICON_URL}"
           alt="Porter's orangutan mascot reaching through a leafy jungle"
-          width="192"
-          height="192"
+          width="280"
+          height="280"
         >
       </div>`;
 
@@ -16,14 +16,14 @@ const MASCOT_STYLES = `
   <style data-porter-mascot-styles>
     .hero-mascot-card {
       position: relative;
-      width: 190px;
+      width: 280px;
       aspect-ratio: 1;
       overflow: hidden;
-      transform: rotate(3deg);
-      border: var(--line);
-      border-radius: 28%;
-      background: #5f8f27;
-      box-shadow: var(--shadow);
+      transform: rotate(2deg);
+      border: 0;
+      border-radius: 24%;
+      background: transparent;
+      box-shadow: 0 12px 28px rgba(24, 21, 29, 0.18);
     }
 
     .hero-mascot-card img {
@@ -31,21 +31,21 @@ const MASCOT_STYLES = `
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: 24%;
     }
 
     @media (max-width: 900px) {
       .hero-mascot-card {
-        width: 144px;
+        width: 210px;
         margin: 12px auto 0;
       }
     }
 
     @media (max-width: 650px) {
       .hero-mascot-card {
-        width: 118px;
+        width: 160px;
         margin-top: 8px;
-        border-width: 3px;
-        box-shadow: 4px 4px 0 var(--ink);
+        box-shadow: 0 8px 18px rgba(24, 21, 29, 0.14);
       }
     }
 
