@@ -5,6 +5,16 @@
 [functions]
   node_bundler = "esbuild"
 
+[[edge_functions]]
+  function = "add-social-meta"
+  path = "/"
+
+[[redirects]]
+  from = "/porter-day-arc-icon.png"
+  to = "/.netlify/functions/porter-assets"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/api/calendar"
   to = "/.netlify/functions/calendar"
