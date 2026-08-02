@@ -10,8 +10,8 @@
   "theme_color": "#4f7f1c",
   "icons": [
     {
-      "src": "/porter-day-arc-icon.png",
-      "sizes": "192x192",
+      "src": "https://raw.githubusercontent.com/parkerpixie/porter-daily-hub/main/netlify/functions/porter-orangutan-mascot.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     }
