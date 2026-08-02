@@ -2,6 +2,61 @@ const SITE_URL = "https://porterdailyhub.netlify.app/";
 const ICON_URL = `${SITE_URL}porter-day-arc-icon.png?v=20260802`;
 const DESCRIPTION = "Porter's visual daily hub for schedules, shared skills, preparation checklists, weekly planning, and packing.";
 
+const MASCOT_MARKUP = `
+      <div class="hero-mascot-card">
+        <img
+          src="/porter-day-arc-icon.png?v=20260802"
+          alt="Porter's orangutan mascot reaching through a leafy jungle"
+          width="192"
+          height="192"
+        >
+      </div>`;
+
+const MASCOT_STYLES = `
+  <style data-porter-mascot-styles>
+    .hero-mascot-card {
+      position: relative;
+      width: 190px;
+      aspect-ratio: 1;
+      overflow: hidden;
+      transform: rotate(3deg);
+      border: var(--line);
+      border-radius: 28%;
+      background: #5f8f27;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-mascot-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @media (max-width: 900px) {
+      .hero-mascot-card {
+        width: 144px;
+        margin: 12px auto 0;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .hero-mascot-card {
+        width: 118px;
+        margin-top: 8px;
+        border-width: 3px;
+        box-shadow: 4px 4px 0 var(--ink);
+      }
+    }
+
+    @media print {
+      .hero-mascot-card {
+        display: none !important;
+      }
+    }
+  </style>
+`;
+
 export default async (request, context) => {
   const response = await context.next();
   const contentType = response.headers.get("content-type") || "";
@@ -34,6 +89,15 @@ export default async (request, context) => {
   if (!html.includes('property="og:title"')) {
     html = html.replace("</head>", `${socialTags}</head>`);
   }
+
+  if (!html.includes("data-porter-mascot-styles")) {
+    html = html.replace("</head>", `${MASCOT_STYLES}</head>`);
+  }
+
+  html = html.replace(
+    /\s*<div class="speech-bubble" aria-hidden="true">[\s\S]*?<\/div>/,
+    `\n${MASCOT_MARKUP}`
+  );
 
   const headers = new Headers(response.headers);
   headers.delete("content-length");
