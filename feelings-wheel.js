@@ -69,7 +69,7 @@
     launch.setAttribute('aria-labelledby', 'feelingsLaunchHeading');
     launch.innerHTML = `
       <div class="feelings-launch-copy">
-        <span class="scene-label">CHECK YOUR HUD</span>
+        <span class="scene-label">CHECK YOUR MOOD</span>
         <h3 id="feelingsLaunchHeading">HOW ARE YOU FEELING?</h3>
         <p>No perfect answer required. Pick the closest thing and get one tiny next move.</p>
       </div>
