@@ -2,6 +2,22 @@
   const TARGET_TEXT = "Stuffed Animal: 1 Only!";
   const STORAGE_KEYS = ["porterPacking:summer", "porterPacking:winter"];
 
+  function loadFeelingsWheel() {
+    if (!document.querySelector('link[href="feelings-wheel.css"]')) {
+      const stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = "feelings-wheel.css";
+      document.head.appendChild(stylesheet);
+    }
+
+    if (!document.querySelector('script[src="feelings-wheel.js"]')) {
+      const script = document.createElement("script");
+      script.src = "feelings-wheel.js";
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }
+
   function isStuffedAnimal(text = "") {
     return /stuffed\s+animal/i.test(String(text));
   }
@@ -39,6 +55,7 @@
   }
 
   function start() {
+    loadFeelingsWheel();
     migrateStoredLists();
 
     const list = document.querySelector("#packingList");
