@@ -1,310 +1,47 @@
 (() => {
   const FEELINGS = [
-    {
-      key: 'mad', label: 'MAD', words: ['frustrated', 'annoyed', 'angry', 'furious', 'jealous', 'disrespected'],
-      message: 'Something feels unfair, blocked, too much, or not okay.',
-      action: 'Give your body 60 seconds before deciding what to do next.',
-      deep: ['Unclench your jaw and hands.', 'Say what happened in one sentence without explaining the whole case.', 'Ask: do I need space, help, or a change?']
-    },
-    {
-      key: 'stressed', label: 'STRESSED', words: ['overwhelmed', 'rushed', 'pressured', 'stuck', 'confused', 'too much'],
-      message: 'Your brain may be carrying more tabs than it can comfortably keep open.',
-      action: 'Pick just one next thing. Everything else can wait for one minute.',
-      deep: ['Reduce noise or visual clutter if you can.', 'Ask someone to turn the next step into one concrete action.', 'Use a timer for five minutes and only do that one thing.']
-    },
-    {
-      key: 'sad', label: 'SAD', words: ['hurt', 'lonely', 'disappointed', 'left out', 'grief', 'empty'],
-      message: 'Something mattered, and right now it hurts.',
-      action: 'Do one gentle thing before trying to solve the feeling.',
-      deep: ['Find a safe person or safe place.', 'Name what you wish had happened instead.', 'Choose comfort first, problem-solving second.']
-    },
-    {
-      key: 'scared', label: 'SCARED', words: ['worried', 'nervous', 'unsafe', 'uncertain', 'panicky', 'embarrassed'],
-      message: 'Your brain is trying to predict danger or protect you from something uncertain.',
-      action: 'Look around and name three things that are actually true right now.',
-      deep: ['Put both feet on the floor.', 'Separate what you know from what your brain is predicting.', 'Ask for the information you need instead of filling in the blank.']
-    },
-    {
-      key: 'tired', label: 'TIRED', words: ['drained', 'sleepy', 'burned out', 'done', 'low battery', 'foggy'],
-      message: 'Your system may be out of fuel, not out of character.',
-      action: 'Lower the difficulty setting for the next ten minutes.',
-      deep: ['Drink something or eat if you need fuel.', 'Sit somewhere quieter.', 'Choose the easiest version of the next task that still counts.']
-    },
-    {
-      key: 'sensory', label: 'SENSORY', words: ['too loud', 'too bright', 'itchy', 'crowded', 'touchy', 'body weird'],
-      message: 'Your nervous system may be reacting to the environment before words catch up.',
-      action: 'Change one sensory input right now.',
-      deep: ['Headphones, sunglasses, hoodie, different seat, or more space are all valid tools.', 'Notice whether sound, light, touch, smell, movement, hunger, or temperature is the biggest problem.', 'You do not have to explain the whole feeling before asking for less input.']
-    },
-    {
-      key: 'good', label: 'GOOD', words: ['happy', 'calm', 'proud', 'excited', 'connected', 'relieved'],
-      message: 'Something is working. It is worth noticing that too.',
-      action: 'Take five seconds to notice what helped this feeling happen.',
-      deep: ['What went right?', 'Who or what helped?', 'Is there anything here you want to repeat tomorrow?']
-    },
-    {
-      key: 'other', label: 'OTHER', words: ['bored', 'restless', 'numb', 'mixed up', 'not sure', 'weird'],
-      message: 'You do not need the perfect word. "Something is off" is useful information.',
-      action: 'Start with your body: more energy, less energy, or just uncomfortable?',
-      deep: ['Check hunger, thirst, sleep, pain, temperature, and sensory load.', 'Think about what happened right before the feeling showed up.', 'If none of the words fit, "not sure yet" is a completely valid check-in.']
-    }
+    {key:'mad',label:'MAD',words:['frustrated','annoyed','angry','furious','jealous','disrespected'],message:'Something feels unfair, blocked, too much, or not okay.',action:'Give your body 60 seconds before deciding what to do next.',deep:['Unclench your jaw and hands.','Say what happened in one sentence.','Ask: do I need space, help, or a change?']},
+    {key:'anxious',label:'ANXIOUS',words:['worried','nervous','on edge','panicky','dreading','spiraling'],message:'Your brain may be scanning ahead for what could go wrong.',action:'Come back to right now: name one thing you know is true.',deep:['Put both feet somewhere solid.','Separate what you know from what you are predicting.','Ask for one piece of information that would make the unknown smaller.']},
+    {key:'stressed',label:'STRESSED',words:['overwhelmed','rushed','pressured','stuck','confused','too much'],message:'Your brain may be carrying more tabs than it can comfortably keep open.',action:'Pick just one next thing. Everything else can wait for one minute.',deep:['Reduce noise or visual clutter.','Ask someone to turn the next step into one concrete action.','Use a five-minute timer for only that thing.']},
+    {key:'sad',label:'SAD',words:['hurt','lonely','disappointed','left out','grief','empty'],message:'Something mattered, and right now it hurts.',action:'Do one gentle thing before trying to solve the feeling.',deep:['Find a safe person or place.','Name what you wish had happened instead.','Choose comfort first, problem-solving second.']},
+    {key:'scared',label:'SCARED',words:['afraid','unsafe','uncertain','startled','intimidated','embarrassed'],message:'Your brain is trying to protect you from something that feels threatening or uncertain.',action:'Look around and name three things that are actually true right now.',deep:['Put both feet on the floor.','Look for what is happening now, not what might happen later.','Ask for help or information if you need it.']},
+    {key:'tired',label:'TIRED',words:['drained','sleepy','burned out','done','low battery','foggy'],message:'Your system may be out of fuel, not out of character.',action:'Lower the difficulty setting for the next ten minutes.',deep:['Drink something or eat if you need fuel.','Sit somewhere quieter.','Choose the easiest version of the next task that still counts.']},
+    {key:'sensory',label:'SENSORY',words:['too loud','too bright','itchy','crowded','touchy','body weird'],message:'Your nervous system may be reacting to the environment before words catch up.',action:'Change one sensory input right now.',deep:['Try headphones, sunglasses, a hoodie, a different seat, or more space.','Check sound, light, touch, smell, movement, hunger, and temperature.','You can ask for less input before you can fully explain why.']},
+    {key:'good',label:'GOOD',words:['happy','calm','proud','excited','connected','relieved'],message:'Something is working. It is worth noticing that too.',action:'Take five seconds to notice what helped this feeling happen.',deep:['What went right?','Who or what helped?','Is there anything here you want to repeat?']},
+    {key:'other',label:'OTHER',words:['bored','restless','numb','mixed up','not sure','weird'],message:'You do not need the perfect word. Something is off is useful information.',action:'Start with your body: more energy, less energy, or just uncomfortable?',deep:['Check hunger, thirst, sleep, pain, temperature, and sensory load.','Think about what happened right before this showed up.','Not sure yet is a valid check-in.']}
   ];
-
-  const STORAGE_KEY = 'porter-feelings-checkin-v1';
-  let selectedFamily = FEELINGS[0];
-  let selectedWord = '';
-  let rotation = 0;
-  let dragStartAngle = 0;
-  let dragStartRotation = 0;
-  let dragging = false;
-
-  function buildUI() {
-    const dailyView = document.getElementById('dailyView');
-    const nowPanel = dailyView?.querySelector('.now-panel');
-    if (!dailyView || !nowPanel || document.getElementById('feelingsLaunchPanel')) return;
-
-    const launch = document.createElement('section');
-    launch.id = 'feelingsLaunchPanel';
-    launch.className = 'feelings-launch-panel manga-panel';
-    launch.setAttribute('aria-labelledby', 'feelingsLaunchHeading');
-    launch.innerHTML = `
-      <div class="feelings-launch-copy">
-        <span class="scene-label">CHECK YOUR MOOD</span>
-        <h3 id="feelingsLaunchHeading">HOW ARE YOU FEELING?</h3>
-        <p>No perfect answer required. Pick the closest thing and get one tiny next move.</p>
-      </div>
-      <div class="feelings-launch-actions">
-        <button class="feelings-open-button" type="button" id="openFeelingsWheel">OPEN FEELINGS WHEEL</button>
-        <p class="feelings-last-checkin" id="feelingsLastCheckin">No check-in saved yet.</p>
-      </div>`;
-    nowPanel.insertAdjacentElement('afterend', launch);
-
-    const dialog = document.createElement('dialog');
-    dialog.id = 'feelingsDialog';
-    dialog.className = 'feelings-dialog';
-    dialog.setAttribute('aria-labelledby', 'feelingsDialogTitle');
-    dialog.innerHTML = `
-      <div class="feelings-dialog-inner">
-        <div class="feelings-dialog-header">
-          <div>
-            <span class="scene-label">PORTER'S FEELINGS WHEEL</span>
-            <h2 id="feelingsDialogTitle">WHAT'S GOING ON IN THERE?</h2>
-          </div>
-          <button class="feelings-close" type="button" id="closeFeelingsWheel" aria-label="Close feelings wheel">✕</button>
-        </div>
-        <div class="feelings-stage">
-          <div class="feelings-wheel-side">
-            <div class="feelings-wheel-wrap" id="feelingsWheelWrap">
-              <div class="feelings-pointer" aria-hidden="true"></div>
-              <div class="feelings-wheel" id="feelingsWheel" aria-label="Feelings categories"></div>
-              <div class="feelings-wheel-core">
-                <strong id="feelingsCoreLabel">MAD</strong>
-                <span>DRAG, SPIN, OR TAP</span>
-              </div>
-            </div>
-            <p class="feelings-drag-hint">Spin the wheel or tap the category that feels closest.</p>
-          </div>
-          <section class="feelings-detail" aria-live="polite">
-            <span class="scene-label">GET MORE SPECIFIC</span>
-            <h3 id="feelingDetailHeading">MAD CAN MEAN A LOT</h3>
-            <p class="feelings-detail-intro" id="feelingDetailIntro">Pick the word that is closest. Close enough counts.</p>
-            <div class="feeling-word-grid" id="feelingWordGrid"></div>
-            <div class="feeling-result" id="feelingResult" hidden>
-              <div class="feeling-result-title" id="feelingResultTitle"></div>
-              <p class="feeling-result-copy" id="feelingResultCopy"></p>
-              <div class="feeling-action-card">
-                <span>TINY NEXT MOVE</span>
-                <strong id="feelingAction"></strong>
-              </div>
-              <button class="feelings-more-button" id="feelingsMoreButton" type="button" aria-expanded="false">HELP ME FIGURE THIS OUT</button>
-              <div class="feelings-deep-dive" id="feelingsDeepDive" hidden></div>
-              <button class="feelings-save-button" id="feelingsSaveButton" type="button">SAVE THIS CHECK-IN</button>
-            </div>
-            <div class="feelings-mascot-row">
-              <img src="porter-orangutan-mascot.png" alt="Porter's orangutan guide">
-              <p>You are not choosing a permanent label. This is just a snapshot of right now.</p>
-            </div>
-          </section>
-        </div>
-      </div>`;
-    document.body.appendChild(dialog);
-
-    renderWheel();
-    selectFamily(FEELINGS[0], false);
-    bindEvents();
-    showSavedCheckin();
-  }
-
-  function renderWheel() {
-    const wheel = document.getElementById('feelingsWheel');
-    if (!wheel) return;
-    wheel.innerHTML = '';
-    FEELINGS.forEach((feeling, index) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'feeling-slice';
-      button.dataset.feeling = feeling.key;
-      button.style.setProperty('--angle', `${index * 45}deg`);
-      button.textContent = feeling.label;
-      button.addEventListener('click', (event) => {
-        event.stopPropagation();
-        selectedWord = '';
-        snapTo(index);
-        selectFamily(feeling, true);
-      });
-      wheel.appendChild(button);
-    });
-  }
-
-  function selectFamily(feeling, announce = true) {
-    selectedFamily = feeling;
-    selectedWord = '';
-    document.getElementById('feelingsCoreLabel').textContent = feeling.label;
-    document.getElementById('feelingDetailHeading').textContent = `${feeling.label} CAN MEAN A LOT`;
-    document.getElementById('feelingDetailIntro').textContent = 'Pick the word that is closest. Close enough counts.';
-
-    document.querySelectorAll('.feeling-slice').forEach((el) => {
-      el.classList.toggle('is-selected', el.dataset.feeling === feeling.key);
-    });
-
-    const grid = document.getElementById('feelingWordGrid');
-    grid.innerHTML = '';
-    feeling.words.forEach((word) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'feeling-word';
-      button.textContent = word;
-      button.addEventListener('click', () => selectWord(word));
-      grid.appendChild(button);
-    });
-
-    document.getElementById('feelingResult').hidden = true;
-    document.getElementById('feelingsDeepDive').hidden = true;
-    const more = document.getElementById('feelingsMoreButton');
-    more.setAttribute('aria-expanded', 'false');
-    more.textContent = 'HELP ME FIGURE THIS OUT';
-
-    if (announce) grid.querySelector('button')?.focus({ preventScroll: true });
-  }
-
-  function selectWord(word) {
-    selectedWord = word;
-    document.querySelectorAll('.feeling-word').forEach((el) => {
-      el.classList.toggle('is-selected', el.textContent === word);
-    });
-    document.getElementById('feelingResultTitle').textContent = `Okay: ${word}.`;
-    document.getElementById('feelingResultCopy').textContent = selectedFamily.message;
-    document.getElementById('feelingAction').textContent = selectedFamily.action;
-    document.getElementById('feelingsDeepDive').innerHTML = `<strong>If you want more:</strong><ul>${selectedFamily.deep.map(item => `<li>${item}</li>`).join('')}</ul>`;
-    document.getElementById('feelingResult').hidden = false;
-  }
-
-  function bindEvents() {
-    const dialog = document.getElementById('feelingsDialog');
-    document.getElementById('openFeelingsWheel').addEventListener('click', () => {
-      if (typeof dialog.showModal === 'function') dialog.showModal();
-      else dialog.setAttribute('open', '');
-    });
-    document.getElementById('closeFeelingsWheel').addEventListener('click', () => dialog.close());
-    dialog.addEventListener('click', (event) => {
-      if (event.target === dialog) dialog.close();
-    });
-
-    document.getElementById('feelingsMoreButton').addEventListener('click', (event) => {
-      const deep = document.getElementById('feelingsDeepDive');
-      const willOpen = deep.hidden;
-      deep.hidden = !willOpen;
-      event.currentTarget.setAttribute('aria-expanded', String(willOpen));
-      event.currentTarget.textContent = willOpen ? 'HIDE THE EXTRA STUFF' : 'HELP ME FIGURE THIS OUT';
-    });
-
-    document.getElementById('feelingsSaveButton').addEventListener('click', saveCheckin);
-
-    const wrap = document.getElementById('feelingsWheelWrap');
-    const wheel = document.getElementById('feelingsWheel');
-    wrap.addEventListener('pointerdown', (event) => {
-      dragging = true;
-      dragStartAngle = pointerAngle(event, wrap);
-      dragStartRotation = rotation;
-      wheel.classList.add('is-dragging');
-      wrap.setPointerCapture?.(event.pointerId);
-    });
-    wrap.addEventListener('pointermove', (event) => {
-      if (!dragging) return;
-      const current = pointerAngle(event, wrap);
-      rotation = dragStartRotation + (current - dragStartAngle);
-      wheel.style.transform = `rotate(${rotation}deg)`;
-    });
-    const endDrag = () => {
-      if (!dragging) return;
-      dragging = false;
-      wheel.classList.remove('is-dragging');
-      const index = nearestIndex(rotation);
-      snapTo(index);
-      selectFamily(FEELINGS[index], false);
-    };
-    wrap.addEventListener('pointerup', endDrag);
-    wrap.addEventListener('pointercancel', endDrag);
-  }
-
-  function pointerAngle(event, element) {
-    const rect = element.getBoundingClientRect();
-    const x = event.clientX - (rect.left + rect.width / 2);
-    const y = event.clientY - (rect.top + rect.height / 2);
-    return Math.atan2(y, x) * 180 / Math.PI;
-  }
-
-  function nearestIndex(currentRotation) {
-    const normalized = ((-currentRotation % 360) + 360) % 360;
-    return Math.round(normalized / 45) % FEELINGS.length;
-  }
-
-  function snapTo(index) {
-    rotation = -(index * 45);
-    const wheel = document.getElementById('feelingsWheel');
-    wheel.style.transform = `rotate(${rotation}deg)`;
-    wheel.querySelectorAll('.feeling-slice').forEach((button, i) => {
-      button.style.setProperty('--counter-rotation', `${-rotation}deg`);
-      button.style.transform = `rotate(${i * 45}deg) translateY(${window.innerWidth <= 420 ? '-102px' : window.innerWidth <= 760 ? '-122px' : '-150px'}) rotate(${-i * 45 - rotation}deg)`;
-    });
-  }
-
-  function saveCheckin() {
-    if (!selectedWord) return;
-    const payload = {
-      family: selectedFamily.key,
-      familyLabel: selectedFamily.label,
-      word: selectedWord,
-      timestamp: new Date().toISOString()
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    showSavedCheckin();
-    const button = document.getElementById('feelingsSaveButton');
-    button.textContent = 'SAVED ✓';
-    setTimeout(() => {
-      button.textContent = 'SAVE THIS CHECK-IN';
-      document.getElementById('feelingsDialog').close();
-    }, 650);
-  }
-
-  function showSavedCheckin() {
-    const label = document.getElementById('feelingsLastCheckin');
-    if (!label) return;
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      if (!saved?.word || !saved?.timestamp) {
-        label.textContent = 'No check-in saved yet.';
-        return;
-      }
-      const when = new Date(saved.timestamp);
-      const sameDay = when.toDateString() === new Date().toDateString();
-      const time = when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-      label.textContent = `${sameDay ? 'Today' : when.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${time}: ${saved.word}`;
-    } catch {
-      label.textContent = 'No check-in saved yet.';
-    }
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', buildUI);
-  else buildUI();
+  const HISTORY_KEY='porter-feelings-history-v2', LEGACY_KEY='porter-feelings-checkin-v1', LOCATION_KEY='porter-feelings-locations-v1';
+  const DEFAULT_LOCATIONS=['In bed','At home','In the car','At school','Therapy / doctor appointment','Cumberland'];
+  const TECHNIQUES=['Take space','Headphones / reduce sensory input','Slow breathing','Cold water / temperature change','Move my body','Talk to someone','Break it into one small step','Music','Comfort item','Distract for a little while'];
+  let selectedFamily=FEELINGS[0], selectedWord='', rotation=0, dragging=false, dragStartAngle=0, dragStartRotation=0;
+  const $=id=>document.getElementById(id);
+  function history(){try{return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]')}catch{return[]}}
+  function locations(){try{return [...new Set([...DEFAULT_LOCATIONS,...JSON.parse(localStorage.getItem(LOCATION_KEY)||'[]')])]}catch{return DEFAULT_LOCATIONS}}
+  function saveLocations(list){localStorage.setItem(LOCATION_KEY,JSON.stringify(list.filter(x=>!DEFAULT_LOCATIONS.includes(x))))}
+  function migrate(){if(history().length)return;try{const old=JSON.parse(localStorage.getItem(LEGACY_KEY)||'null');if(old?.word) localStorage.setItem(HISTORY_KEY,JSON.stringify([{...old,location:'Not recorded',techniqueUsed:null,techniques:[]}]))}catch{}}
+  function buildUI(){const daily=$('dailyView'),now=daily?.querySelector('.now-panel');if(!daily||!now||$('feelingsLaunchPanel'))return;migrate();
+    const launch=document.createElement('section');launch.id='feelingsLaunchPanel';launch.className='feelings-launch-panel manga-panel';launch.innerHTML=`<div class="feelings-launch-copy"><span class="scene-label">CHECK YOUR MOOD</span><h3>HOW ARE YOU FEELING?</h3><p>Tap a big feeling, then narrow it down. Close enough counts.</p></div><div class="feelings-launch-actions"><button class="feelings-open-button" id="openFeelingsWheel">OPEN FEELINGS WHEEL</button><button class="feelings-log-button" id="openMoodLog">MOOD CALENDAR</button><p class="feelings-last-checkin" id="feelingsLastCheckin"></p></div>`;now.after(launch);
+    const dialog=document.createElement('dialog');dialog.id='feelingsDialog';dialog.className='feelings-dialog';dialog.innerHTML=`<div class="feelings-dialog-inner"><div class="feelings-dialog-header"><div><span class="scene-label">PORTER'S FEELINGS WHEEL</span><h2>WHAT'S GOING ON IN THERE?</h2></div><button class="feelings-close" id="closeFeelingsWheel">✕</button></div><div class="feelings-quick-picks" id="feelingsQuickPicks"></div><div class="feelings-stage"><div class="feelings-wheel-side"><div class="feelings-wheel-wrap" id="feelingsWheelWrap"><div class="feelings-pointer"></div><div class="feelings-wheel" id="feelingsWheel"></div><div class="feelings-wheel-core"><strong id="feelingsCoreLabel"></strong><span>SPIN OR TAP</span></div></div><p class="feelings-drag-hint">The wheel can spin, but tapping a big word works just as well.</p></div><section class="feelings-detail"><span class="scene-label">GET MORE SPECIFIC</span><h3 id="feelingDetailHeading"></h3><p class="feelings-detail-intro">Pick the closest word. Close enough counts.</p><div class="feeling-word-grid" id="feelingWordGrid"></div><div class="feeling-result" id="feelingResult" hidden><div class="feeling-result-title" id="feelingResultTitle"></div><p class="feeling-result-copy" id="feelingResultCopy"></p><div class="feeling-action-card"><span>TINY NEXT MOVE</span><strong id="feelingAction"></strong></div><button class="feelings-more-button" id="feelingsMoreButton">HELP ME FIGURE THIS OUT</button><div class="feelings-deep-dive" id="feelingsDeepDive" hidden></div><button class="feelings-save-button" id="feelingsSaveButton">SAVE THIS CHECK-IN</button></div><div class="feelings-mascot-row"><img src="porter-orangutan-mascot.png" alt="Porter's orangutan guide"><p>This is a snapshot of right now, not a permanent label.</p></div></section></div></div>`;document.body.append(dialog);
+    const save=document.createElement('dialog');save.id='moodSaveDialog';save.className='feelings-dialog mood-save-dialog';save.innerHTML=`<div class="feelings-dialog-inner"><div class="feelings-dialog-header"><div><span class="scene-label">ADD A LITTLE CONTEXT</span><h2>BEFORE WE SAVE IT...</h2></div><button class="feelings-close" id="closeMoodSave">✕</button></div><section class="mood-question"><h3>WHERE ARE YOU?</h3><div id="locationChoices" class="mood-choice-grid"></div><div class="mood-add-row"><input id="newMoodLocation" maxlength="50" placeholder="Add another location"><button id="addMoodLocation">ADD LOCATION</button></div></section><section class="mood-question"><h3>HAVE YOU USED ANY TECHNIQUES TO TRY TO GET UNSTUCK?</h3><div class="mood-choice-grid"><button class="mood-choice" data-tech-answer="yes">YES</button><button class="mood-choice" data-tech-answer="no">NO</button></div><div id="techniqueChoices" hidden><p>Which ones have you tried? Pick any that fit.</p><div class="mood-choice-grid" id="techniqueGrid"></div></div></section><button class="feelings-save-button" id="confirmMoodSave">SAVE TO MY MOOD CALENDAR</button></div>`;document.body.append(save);
+    const log=document.createElement('dialog');log.id='moodLogDialog';log.className='feelings-dialog mood-log-dialog';log.innerHTML=`<div class="feelings-dialog-inner"><div class="feelings-dialog-header"><div><span class="scene-label">MY MOOD CALENDAR</span><h2>EMOTIONS OVER TIME</h2></div><button class="feelings-close" id="closeMoodLog">✕</button></div><div class="mood-calendar-nav"><button id="prevMoodMonth">‹</button><strong id="moodMonthLabel"></strong><button id="nextMoodMonth">›</button></div><div class="mood-calendar-weekdays"><span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span></div><div id="moodCalendar" class="mood-calendar"></div><div id="moodDayDetail" class="mood-day-detail"><p>Tap a day to see its check-ins.</p></div></div>`;document.body.append(log);
+    renderWheel();renderQuickPicks();selectFamily(FEELINGS[0],false);bind();showLast();}
+  function renderQuickPicks(){const box=$('feelingsQuickPicks');box.innerHTML='<span class="quick-pick-label">TAP A BIG FEELING</span>';FEELINGS.forEach((f,i)=>{const b=document.createElement('button');b.className='feeling-quick-pick';b.textContent=f.label;b.onclick=()=>{snapTo(i);selectFamily(f,true)};box.append(b)})}
+  function renderWheel(){const wheel=$('feelingsWheel');wheel.innerHTML='';const step=360/FEELINGS.length;FEELINGS.forEach((f,i)=>{const b=document.createElement('button');b.className='feeling-slice';b.dataset.feeling=f.key;b.textContent=f.label;b.onclick=e=>{e.stopPropagation();snapTo(i);selectFamily(f,true)};wheel.append(b);positionSlices()})}
+  function positionSlices(){const step=360/FEELINGS.length,dist=innerWidth<=420?102:innerWidth<=760?122:150;document.querySelectorAll('.feeling-slice').forEach((b,i)=>b.style.transform=`rotate(${i*step}deg) translateY(-${dist}px) rotate(${-i*step-rotation}deg)`) }
+  function selectFamily(f,focus=true){selectedFamily=f;selectedWord='';$('feelingsCoreLabel').textContent=f.label;$('feelingDetailHeading').textContent=`${f.label} CAN MEAN A LOT`;document.querySelectorAll('.feeling-slice,.feeling-quick-pick').forEach(el=>el.classList.toggle('is-selected',el.textContent===f.label));const grid=$('feelingWordGrid');grid.innerHTML='';f.words.forEach(w=>{const b=document.createElement('button');b.className='feeling-word';b.textContent=w;b.onclick=()=>selectWord(w);grid.append(b)});$('feelingResult').hidden=true;$('feelingsDeepDive').hidden=true;if(focus)grid.querySelector('button')?.focus({preventScroll:true})}
+  function selectWord(w){selectedWord=w;document.querySelectorAll('.feeling-word').forEach(x=>x.classList.toggle('is-selected',x.textContent===w));$('feelingResultTitle').textContent=`Okay: ${w}.`;$('feelingResultCopy').textContent=selectedFamily.message;$('feelingAction').textContent=selectedFamily.action;$('feelingsDeepDive').innerHTML=`<strong>If you want more:</strong><ul>${selectedFamily.deep.map(x=>`<li>${x}</li>`).join('')}</ul>`;$('feelingResult').hidden=false}
+  let saveLocation='',techAnswer=null,chosenTech=[];
+  function openSave(){if(!selectedWord)return;saveLocation='';techAnswer=null;chosenTech=[];renderLocations();renderTechniques();$('techniqueChoices').hidden=true;$('moodSaveDialog').showModal()}
+  function renderLocations(){const box=$('locationChoices');box.innerHTML='';locations().forEach(l=>{const b=document.createElement('button');b.className='mood-choice';b.textContent=l;b.onclick=()=>{saveLocation=l;box.querySelectorAll('button').forEach(x=>x.classList.toggle('is-selected',x===b))};box.append(b)})}
+  function renderTechniques(){const box=$('techniqueGrid');box.innerHTML='';TECHNIQUES.forEach(t=>{const b=document.createElement('button');b.className='mood-choice';b.textContent=t;b.onclick=()=>{chosenTech.includes(t)?chosenTech=chosenTech.filter(x=>x!==t):chosenTech.push(t);b.classList.toggle('is-selected')};box.append(b)})}
+  function confirmSave(){if(!saveLocation){$('locationChoices').classList.add('needs-answer');return}const item={family:selectedFamily.key,familyLabel:selectedFamily.label,word:selectedWord,timestamp:new Date().toISOString(),location:saveLocation,techniqueUsed:techAnswer,techniques:chosenTech};const h=history();h.push(item);localStorage.setItem(HISTORY_KEY,JSON.stringify(h));localStorage.setItem(LEGACY_KEY,JSON.stringify(item));$('moodSaveDialog').close();$('feelingsDialog').close();showLast();renderCalendar();}
+  let calendarDate=new Date();calendarDate.setDate(1);
+  function renderCalendar(){const box=$('moodCalendar');if(!box)return;box.innerHTML='';$('moodMonthLabel').textContent=calendarDate.toLocaleDateString([],{month:'long',year:'numeric'});const y=calendarDate.getFullYear(),m=calendarDate.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),h=history();for(let i=0;i<first;i++)box.append(document.createElement('span'));for(let d=1;d<=days;d++){const b=document.createElement('button');b.className='mood-day';const matches=h.filter(x=>{const q=new Date(x.timestamp);return q.getFullYear()===y&&q.getMonth()===m&&q.getDate()===d});b.innerHTML=`<strong>${d}</strong><span>${matches.slice(0,4).map(x=>'●').join('')}</span>`;if(matches.length)b.classList.add('has-mood');b.onclick=()=>showDay(new Date(y,m,d),matches);box.append(b)}}
+  function showDay(date,items){const box=$('moodDayDetail');box.innerHTML=`<h3>${date.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'})}</h3>${items.length?items.map(x=>`<article><strong>${escapeHtml(x.word)} <small>(${escapeHtml(x.familyLabel)})</small></strong><span>${new Date(x.timestamp).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})} · ${escapeHtml(x.location||'Location not recorded')}</span>${x.techniques?.length?`<p>Tried: ${x.techniques.map(escapeHtml).join(', ')}</p>`:''}</article>`).join(''):'<p>No mood check-ins saved this day.</p>'}`}
+  function escapeHtml(s=''){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+  function bind(){const dialog=$('feelingsDialog');$('openFeelingsWheel').onclick=()=>dialog.showModal();$('closeFeelingsWheel').onclick=()=>dialog.close();$('openMoodLog').onclick=()=>{$('moodLogDialog').showModal();renderCalendar()};$('closeMoodLog').onclick=()=>$('moodLogDialog').close();$('closeMoodSave').onclick=()=>$('moodSaveDialog').close();$('feelingsMoreButton').onclick=()=>{const d=$('feelingsDeepDive');d.hidden=!d.hidden};$('feelingsSaveButton').onclick=openSave;$('confirmMoodSave').onclick=confirmSave;$('addMoodLocation').onclick=()=>{const input=$('newMoodLocation'),v=input.value.trim();if(!v)return;const custom=locations().filter(x=>!DEFAULT_LOCATIONS.includes(x));custom.push(v);saveLocations([...new Set(custom)]);input.value='';renderLocations()};document.querySelectorAll('[data-tech-answer]').forEach(b=>b.onclick=()=>{techAnswer=b.dataset.techAnswer==='yes';document.querySelectorAll('[data-tech-answer]').forEach(x=>x.classList.toggle('is-selected',x===b));$('techniqueChoices').hidden=false;$('techniqueChoices').querySelector('p').textContent=techAnswer?'Which ones have you tried? Pick any that fit.':'Want to try one now? Here are some options.'});$('prevMoodMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()-1);renderCalendar()};$('nextMoodMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()+1);renderCalendar()};const wrap=$('feelingsWheelWrap'),wheel=$('feelingsWheel');wrap.onpointerdown=e=>{if(e.target.closest('button'))return;dragging=true;dragStartAngle=pointerAngle(e,wrap);dragStartRotation=rotation;wheel.classList.add('is-dragging');wrap.setPointerCapture?.(e.pointerId)};wrap.onpointermove=e=>{if(!dragging)return;rotation=dragStartRotation+(pointerAngle(e,wrap)-dragStartAngle);wheel.style.transform=`rotate(${rotation}deg)`;positionSlices()};wrap.onpointerup=()=>{if(!dragging)return;dragging=false;wheel.classList.remove('is-dragging');const step=360/FEELINGS.length,index=Math.round((((-rotation%360)+360)%360)/step)%FEELINGS.length;snapTo(index);selectFamily(FEELINGS[index],false)}}
+  function pointerAngle(e,el){const r=el.getBoundingClientRect();return Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)*180/Math.PI}
+  function snapTo(i){const step=360/FEELINGS.length;rotation=-(i*step);$('feelingsWheel').style.transform=`rotate(${rotation}deg)`;positionSlices()}
+  function showLast(){const el=$('feelingsLastCheckin'),h=history(),x=h[h.length-1];if(!x){el.textContent='No check-in saved yet.';return}const d=new Date(x.timestamp);el.textContent=`Last check-in: ${x.word} · ${d.toLocaleDateString([],{month:'short',day:'numeric'})} ${d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',buildUI);else buildUI();
 })();
