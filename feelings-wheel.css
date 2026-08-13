@@ -1,0 +1,454 @@
+.feelings-launch-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  margin-top: 22px;
+  padding: 22px;
+  overflow: hidden;
+  background: linear-gradient(128deg, rgba(234, 220, 246, .98), rgba(255, 255, 255, .98) 58%, rgba(255, 244, 48, .58));
+}
+
+.feelings-launch-panel::after {
+  content: "";
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  right: -65px;
+  bottom: -95px;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, transparent 0 7px, rgba(24, 21, 29, .08) 8px 10px);
+}
+
+.feelings-launch-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.feelings-launch-copy h3 {
+  margin: 7px 0 5px;
+  font-family: "Bangers", Impact, sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+
+.feelings-launch-copy p {
+  max-width: 650px;
+  margin-bottom: 0;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.feelings-launch-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.feelings-open-button {
+  min-height: 54px;
+  padding: 10px 18px;
+  cursor: pointer;
+  border: 3px solid var(--ink);
+  background: var(--purple);
+  color: white;
+  font-weight: 1000;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.feelings-open-button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.feelings-last-checkin {
+  margin: 0;
+  font-size: .78rem;
+  font-weight: 900;
+  text-align: right;
+  color: var(--muted);
+}
+
+.feelings-dialog {
+  width: min(1040px, calc(100% - 24px));
+  max-height: min(900px, calc(100vh - 24px));
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 4px solid var(--ink);
+  border-radius: 22px;
+  background: var(--paper);
+  box-shadow: 12px 12px 0 rgba(24, 21, 29, .75);
+}
+
+.feelings-dialog::backdrop {
+  background: rgba(24, 21, 29, .72);
+  backdrop-filter: blur(5px);
+}
+
+.feelings-dialog-inner {
+  padding: 20px;
+}
+
+.feelings-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.feelings-dialog-header h2 {
+  margin: 5px 0 0;
+  font-family: "Bangers", Impact, sans-serif;
+  font-size: clamp(2.6rem, 7vw, 4.7rem);
+  font-weight: 400;
+  letter-spacing: .04em;
+  line-height: .95;
+}
+
+.feelings-close {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  cursor: pointer;
+  border: 3px solid var(--ink);
+  background: white;
+  font-size: 1.4rem;
+  font-weight: 1000;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.feelings-stage {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(280px, .92fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.feelings-wheel-side {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+}
+
+.feelings-wheel-wrap {
+  position: relative;
+  width: min(100%, 520px);
+  aspect-ratio: 1;
+  touch-action: none;
+  user-select: none;
+}
+
+.feelings-wheel {
+  position: absolute;
+  inset: 8%;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      #ff8f8f 0deg 45deg,
+      #ffb86f 45deg 90deg,
+      #ffe36d 90deg 135deg,
+      #9bdd95 135deg 180deg,
+      #78d8d0 180deg 225deg,
+      #8ab7ef 225deg 270deg,
+      #b59aee 270deg 315deg,
+      #d994cf 315deg 360deg
+    );
+  box-shadow: 7px 7px 0 var(--ink);
+  transition: transform .38s cubic-bezier(.2,.9,.25,1.2);
+}
+
+.feelings-wheel.is-dragging {
+  transition: none;
+}
+
+.feeling-slice {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30%;
+  min-height: 44px;
+  margin: -22px 0 0 -15%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border: 3px solid var(--ink);
+  background: rgba(255,255,255,.9);
+  font-size: clamp(.7rem, 2vw, .96rem);
+  font-weight: 1000;
+  text-transform: uppercase;
+  box-shadow: 3px 3px 0 var(--ink);
+  transform: rotate(var(--angle)) translateY(-150px) rotate(calc(-1 * var(--angle)));
+}
+
+.feeling-slice.is-selected {
+  background: var(--ink);
+  color: white;
+}
+
+.feelings-wheel-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  width: 31%;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 12px;
+  transform: translate(-50%, -50%);
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background: white;
+  box-shadow: 4px 4px 0 var(--ink);
+  text-align: center;
+}
+
+.feelings-wheel-core strong {
+  font-family: "Bangers", Impact, sans-serif;
+  font-size: clamp(1.3rem, 4vw, 2.15rem);
+  font-weight: 400;
+  line-height: .9;
+  letter-spacing: .04em;
+}
+
+.feelings-wheel-core span {
+  margin-top: 4px;
+  font-size: .66rem;
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.feelings-pointer {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 5;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-top: 28px solid var(--ink);
+}
+
+.feelings-drag-hint {
+  margin: 12px 0 0;
+  font-size: .8rem;
+  font-weight: 900;
+  color: var(--muted);
+  text-align: center;
+}
+
+.feelings-detail {
+  min-height: 470px;
+  padding: 18px;
+  border: 4px solid var(--ink);
+  border-radius: 18px;
+  background: white;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.feelings-detail h3 {
+  margin: 7px 0 7px;
+  font-family: "Bangers", Impact, sans-serif;
+  font-size: 2.4rem;
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+
+.feelings-detail-intro {
+  margin-bottom: 16px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.feeling-word-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.feeling-word {
+  min-height: 46px;
+  padding: 8px 9px;
+  cursor: pointer;
+  border: 3px solid var(--ink);
+  background: var(--cream);
+  font-weight: 1000;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.feeling-word.is-selected {
+  background: var(--yellow);
+}
+
+.feeling-result {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 3px dashed var(--ink);
+}
+
+.feeling-result[hidden] {
+  display: none;
+}
+
+.feeling-result-title {
+  margin-bottom: 5px;
+  font-size: 1.25rem;
+  font-weight: 1000;
+}
+
+.feeling-result-copy {
+  margin-bottom: 12px;
+  font-weight: 800;
+}
+
+.feeling-action-card {
+  padding: 13px;
+  border: 3px solid var(--ink);
+  background: var(--soft-purple);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.feeling-action-card span {
+  display: block;
+  margin-bottom: 3px;
+  font-size: .72rem;
+  font-weight: 1000;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.feeling-action-card strong {
+  font-size: 1.05rem;
+}
+
+.feelings-more-button,
+.feelings-save-button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 12px;
+  padding: 9px 13px;
+  cursor: pointer;
+  border: 3px solid var(--ink);
+  font-weight: 1000;
+  text-transform: uppercase;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.feelings-more-button {
+  background: white;
+}
+
+.feelings-save-button {
+  background: var(--purple);
+  color: white;
+}
+
+.feelings-deep-dive {
+  margin-top: 12px;
+  padding: 13px;
+  border: 3px dashed var(--ink);
+  background: #fffbe2;
+}
+
+.feelings-deep-dive[hidden] {
+  display: none;
+}
+
+.feelings-deep-dive strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.feelings-deep-dive ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.feelings-deep-dive li + li {
+  margin-top: 6px;
+}
+
+.feelings-mascot-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 10px 12px;
+  border: 3px solid var(--ink);
+  background: var(--cream);
+}
+
+.feelings-mascot-row img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.feelings-mascot-row p {
+  margin: 0;
+  font-size: .88rem;
+  font-weight: 900;
+}
+
+@media (max-width: 760px) {
+  .feelings-launch-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .feelings-launch-actions {
+    justify-items: stretch;
+  }
+
+  .feelings-last-checkin {
+    text-align: left;
+  }
+
+  .feelings-dialog-inner {
+    padding: 14px;
+  }
+
+  .feelings-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .feelings-wheel-wrap {
+    width: min(100%, 430px);
+  }
+
+  .feeling-slice {
+    transform: rotate(var(--angle)) translateY(-122px) rotate(calc(-1 * var(--angle)));
+    font-size: .72rem;
+  }
+
+  .feelings-detail {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .feelings-wheel-wrap {
+    width: 350px;
+    max-width: 100%;
+  }
+
+  .feeling-slice {
+    width: 33%;
+    margin-left: -16.5%;
+    transform: rotate(var(--angle)) translateY(-102px) rotate(calc(-1 * var(--angle)));
+    border-width: 2px;
+  }
+
+  .feeling-word-grid {
+    grid-template-columns: 1fr;
+  }
+}
