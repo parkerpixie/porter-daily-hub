@@ -116,8 +116,14 @@
     if (heading) heading.textContent = "PACK FOR 5 DAYS!";
     if (intro) intro.textContent = "Weather-ready list for swimming, walking, hiking, cool evenings, and a little rain. Check each item only after it is physically in the bag.";
     if (summerButton) summerButton.textContent = "🏕 TRAVERSE CITY";
-    if (seasonLabel && window.localStorage.getItem("porterPackingSeason") !== "winter") {
-      seasonLabel.textContent = "TRAVERSE CITY • 5-DAY PACKING LIST";
+    if (seasonLabel) {
+      try {
+        if (window.localStorage.getItem("porterPackingSeason") !== "winter") {
+          seasonLabel.textContent = "TRAVERSE CITY • 5-DAY PACKING LIST";
+        }
+      } catch {
+        seasonLabel.textContent = "TRAVERSE CITY • 5-DAY PACKING LIST";
+      }
     }
     if (printNote) printNote.textContent = "Porter's Traverse City packing list • Sunday Aug 23 through Thursday Aug 27";
   }
@@ -148,6 +154,11 @@
     document.addEventListener("click", () => window.setTimeout(fixVisiblePackingCopy, 0));
     document.addEventListener("change", () => window.setTimeout(fixVisiblePackingCopy, 0));
   }
+
+  // This file loads before app.js. Install the trip list immediately so app.js
+  // reads the Traverse City checklist on its very first render.
+  installTraverseCityList();
+  migrateStoredLists();
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => window.setTimeout(start, 0));
