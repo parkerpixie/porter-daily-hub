@@ -14,62 +14,86 @@ const CORS_HEADERS = {
 
 const item = (id, text) => ({ id, text, checked: false });
 
+function personalBathroom(prefix, pillsText = "Medications") {
+  return [
+    item(`${prefix}-teeth`, "Toothbrush + toothpaste"),
+    item(`${prefix}-deodorant`, "Deodorant"),
+    item(`${prefix}-shampoo`, "Shampoo + conditioner"),
+    item(`${prefix}-body-wash`, "Body wash / soap"),
+    item(`${prefix}-hairbrush`, "Hairbrush / comb"),
+    item(`${prefix}-medications`, pillsText)
+  ];
+}
+
+function carBag(prefix) {
+  return [
+    item(`${prefix}-car-books`, "Books / Manga"),
+    item(`${prefix}-car-gaming`, "Gaming Device"),
+    item(`${prefix}-car-game-charger`, "Game Charger"),
+    item(`${prefix}-car-phone-charger`, "Phone Charger"),
+    item(`${prefix}-car-watch-charger`, "Watch Charger"),
+    item(`${prefix}-car-other-chargers`, "Other Device Charger(s) / Cables"),
+    item(`${prefix}-car-battery`, "External Battery Pack"),
+    item(`${prefix}-car-headphones`, "Headphones / Earbuds")
+  ];
+}
+
 function defaultLists() {
   return {
     jen: {
       title: "Jen's Bag",
       icon: "🧳",
-      subtitle: "Clothes + personal stuff",
+      subtitle: "Clothes + personal bathroom / meds",
       items: [
         item("jen-tops", "6 tops / T-shirts"),
         item("jen-shorts", "2 pairs of shorts"),
         item("jen-pants", "2 pairs of pants / jeans"),
         item("jen-layer", "1 hoodie / sweatshirt"),
         item("jen-underwear", "6 underwear"),
-        item("jen-socks", "7 pairs of socks"),
+        item("jen-socks", "5 pairs of socks"),
+        item("jen-extra-socks", "2 extra pairs of socks for hiking / wet feet"),
         item("jen-pajamas", "Pajamas"),
-        item("jen-swimsuits", "2 swimsuits"),
-        item("jen-rain", "Raincoat / light waterproof jacket"),
-        item("jen-walk", "Walking / hiking shoes"),
+        item("jen-swimsuits", "2 swimsuits → PUT IN SWIM BAG"),
+        item("jen-rain", "Raincoat / light waterproof jacket → GIANT TOTE"),
+        item("jen-walk", "Comfortable hiking shoes → GIANT TOTE"),
         item("jen-sandals", "Sandals"),
-        item("jen-hat", "Hat"),
+        item("jen-water-shoes", "Water shoes → PUT IN SWIM BAG"),
+        item("jen-hat", "Sun hat / cap → PUT IN BEACH BAG"),
         item("jen-sunglasses", "Sunglasses"),
-        item("jen-phone", "Phone"),
-        item("jen-chargers", "Chargers"),
-        item("jen-headphones", "Headphones / earbuds"),
-        item("jen-book", "Book / entertainment"),
+        item("jen-water-bottle", "Refillable water bottle → GIANT TOTE"),
+        ...personalBathroom("jen"),
         item("jen-laundry", "Bag for dirty clothes")
       ]
     },
     blake: {
       title: "Blake's Bag",
       icon: "🎒",
-      subtitle: "Clothes + personal stuff",
+      subtitle: "Clothes + personal bathroom / meds",
       items: [
         item("blake-shirts", "6 shirts / T-shirts"),
         item("blake-shorts", "2 pairs of shorts"),
         item("blake-pants", "2 pairs of pants"),
         item("blake-layer", "1 hoodie / sweatshirt"),
         item("blake-underwear", "6 underwear"),
-        item("blake-socks", "7 pairs of socks"),
+        item("blake-socks", "5 pairs of socks"),
+        item("blake-extra-socks", "2 extra pairs of socks for hiking / wet feet"),
         item("blake-pajamas", "Pajamas"),
-        item("blake-swimsuit", "Swimsuit"),
-        item("blake-rain", "Raincoat / light waterproof jacket"),
-        item("blake-walk", "Walking shoes"),
+        item("blake-swimsuit", "Swimsuit → PUT IN SWIM BAG"),
+        item("blake-rain", "Raincoat / light waterproof jacket → GIANT TOTE"),
+        item("blake-walk", "Comfortable hiking shoes → GIANT TOTE"),
         item("blake-sandals", "Sandals"),
-        item("blake-hat", "Hat"),
+        item("blake-water-shoes", "Water shoes → PUT IN SWIM BAG"),
+        item("blake-hat", "Sun hat / cap → PUT IN BEACH BAG"),
         item("blake-sunglasses", "Sunglasses"),
-        item("blake-phone", "Phone"),
-        item("blake-chargers", "Chargers"),
-        item("blake-headphones", "Headphones / earbuds"),
-        item("blake-book", "Book / entertainment"),
+        item("blake-water-bottle", "Refillable water bottle → GIANT TOTE"),
+        ...personalBathroom("blake"),
         item("blake-laundry", "Bag for dirty clothes")
       ]
     },
     porter: {
       title: "Porter's Bag",
       icon: "🦧",
-      subtitle: "Synced with Porter's app",
+      subtitle: "Synced with Porter's Traverse City checklist",
       items: [
         item("porter-shirts", "6 T-Shirts (5 days + 1 spare)"),
         item("porter-shorts", "2 Pairs of Shorts"),
@@ -77,64 +101,59 @@ function defaultLists() {
         item("porter-long-sleeve", "1 Long-Sleeve Shirt"),
         item("porter-hoodie", "1 Hoodie / Sweatshirt"),
         item("porter-underwear", "6 Underwear (5 days + 1 spare)"),
-        item("porter-socks", "7 Pairs of Socks (5 days + 2 extra for hiking / wet feet)"),
+        item("porter-socks", "5 Pairs of Socks"),
+        item("porter-extra-socks", "2 Extra Pairs of Socks for Hiking / Wet Feet"),
         item("porter-pajamas", "Pajamas"),
-        item("porter-swimsuits", "2 Swimsuits"),
-        item("porter-rain", "Raincoat / Light Waterproof Jacket"),
-        item("porter-shoes", "Hiking / Walking Shoes"),
+        item("porter-swimsuits", "2 Swimsuits → PUT IN SWIM BAG"),
+        item("porter-rain", "Raincoat / Light Waterproof Jacket → GIANT TOTE"),
+        item("porter-shoes", "Comfortable Hiking Shoes → GIANT TOTE"),
         item("porter-sandals", "Sandals"),
-        item("porter-hat", "Sun Hat / Baseball Cap"),
+        item("porter-water-shoes", "Water Shoes → PUT IN SWIM BAG"),
+        item("porter-hat", "Sun Hat / Cap → PUT IN BEACH BAG"),
         item("porter-sunglasses", "Sunglasses"),
-        item("porter-sunscreen", "Sunscreen"),
-        item("porter-bug-spray", "Bug Spray"),
-        item("porter-daypack", "Small Hiking / Day Backpack"),
-        item("porter-water", "Refillable Water Bottle"),
-        item("porter-teeth", "Toothbrush / Toothpaste"),
-        item("porter-shower", "Deodorant + Shower Stuff"),
-        item("porter-pills", "PILLS"),
-        item("porter-phone", "Phone"),
-        item("porter-chargers", "Chargers"),
-        item("porter-headphones", "Headphones / Earbuds"),
+        item("porter-water", "Refillable Water Bottle → GIANT TOTE"),
+        item("porter-teeth", "Toothbrush + Toothpaste"),
+        item("porter-deodorant", "Deodorant"),
+        item("porter-shampoo", "Shampoo + Conditioner"),
+        item("porter-body-wash", "Body Wash / Soap"),
+        item("porter-hairbrush", "Hairbrush / Comb"),
+        item("porter-medications", "PILLS / Medications"),
         item("porter-stuffed", "Stuffed Animal: 1 Only!"),
-        item("porter-book", "Book / Entertainment"),
         item("porter-laundry", "Bag for Dirty Clothes")
       ]
     },
-    toiletries: {
-      title: "Bathroom + Meds",
-      icon: "🪥",
-      subtitle: "The things everyone assumes someone else packed",
-      items: [
-        item("toothbrushes", "Toothbrushes + toothpaste"),
-        item("deodorant", "Deodorant"),
-        item("shampoo", "Shampoo + conditioner"),
-        item("body-wash", "Body wash / soap"),
-        item("hairbrush", "Hairbrush / comb"),
-        item("sunscreen", "Sunscreen"),
-        item("bug-spray", "Bug spray"),
-        item("medications", "All medications"),
-        item("first-aid", "Small first-aid kit"),
-        item("tissues", "Tissues"),
-        item("sanitizer", "Hand sanitizer"),
-        item("lip-balm", "Lip balm")
-      ]
+    jenCar: {
+      title: "Jen's Car Bag",
+      icon: "🚗",
+      subtitle: "Keep within reach during the drive",
+      items: carBag("jen")
+    },
+    blakeCar: {
+      title: "Blake's Car Bag",
+      icon: "🚙",
+      subtitle: "Keep within reach during the drive",
+      items: carBag("blake")
+    },
+    porterCar: {
+      title: "Porter's Car Bag",
+      icon: "🦧",
+      subtitle: "Books, gaming + chargers for the drive",
+      items: carBag("porter")
     },
     hiking: {
       title: "Hiking + Outdoors",
       icon: "🥾",
-      subtitle: "Trails, weather, and not regretting our footwear",
+      subtitle: "Shared check that the outdoor gear made it into the right place",
       items: [
-        item("hiking-shoes", "Comfortable hiking / walking shoes"),
-        item("hiking-socks", "Extra socks for wet feet"),
-        item("daypacks", "Day backpacks"),
-        item("water-bottles", "Refillable water bottles"),
+        item("hiking-shoes", "Comfortable hiking shoes — Jen + Blake + Porter → GIANT TOTE"),
+        item("hiking-socks", "Extra hiking socks — Jen + Blake + Porter → PERSONAL BAGS"),
+        item("daypacks", "Day backpack"),
+        item("water-bottles", "Refillable water bottles — Jen + Blake + Porter → GIANT TOTE"),
         item("hiking-poles", "Hiking poles"),
-        item("rain-layers", "Light rain layers"),
-        item("hats", "Sun hats / caps"),
-        item("hiking-sunscreen", "Sunscreen"),
+        item("rain-layers", "Raincoats — Jen + Blake + Porter → GIANT TOTE"),
+        item("hats", "Sun hats / caps — Jen + Blake + Porter → BEACH BAG"),
         item("hiking-bug", "Bug spray"),
         item("trail-snacks", "Trail snacks"),
-        item("battery", "Portable battery pack"),
         item("offline-maps", "Download offline maps"),
         item("outdoor-first-aid", "Small first-aid kit")
       ]
@@ -142,66 +161,53 @@ function defaultLists() {
     swim: {
       title: "Swim + Beach",
       icon: "🏖️",
-      subtitle: "Lake mode",
+      subtitle: "Swim Bag + Beach Bag",
       items: [
-        item("swimsuits", "Swimsuits"),
-        item("towels", "Beach / swim towels"),
-        item("water-shoes", "Water shoes / sandals"),
-        item("swim-sunscreen", "Sunscreen"),
-        item("beach-bag", "Beach bag"),
-        item("wet-bag", "Wet swimsuit bag"),
-        item("goggles", "Goggles"),
-        item("beach-water", "Water bottles")
+        item("swimsuits", "Swimsuits — Jen + Blake + Porter → SWIM BAG"),
+        item("towels", "3 Beach Towels"),
+        item("water-shoes", "Water shoes — Jen + Blake + Porter → SWIM BAG"),
+        item("beach-hats", "Sun hats / caps — Jen + Blake + Porter → BEACH BAG"),
+        item("swim-sunscreen", "Sunscreen → BEACH BAG"),
+        item("beach-bag", "Beach Bag"),
+        item("wet-bag", "Wet swimsuit bag")
       ]
     },
     food: {
-      title: "Snacks + Drinks",
-      icon: "🥨",
-      subtitle: "Road-trip civilization supplies",
+      title: "Grocery List / Food to Pack",
+      icon: "🛒",
+      subtitle: "Buy these, then make sure they leave with us",
       items: [
-        item("water", "Water"),
-        item("cold-drinks", "Favorite cold drinks"),
-        item("granola", "Granola / protein bars"),
-        item("trail-mix", "Trail mix / nuts"),
-        item("fruit", "Fruit"),
-        item("crackers", "Crackers / pretzels"),
-        item("jerky", "Jerky / protein snack"),
-        item("sweet", "Something sweet"),
-        item("gum", "Gum / mints"),
-        item("cooler", "Cooler"),
-        item("ice-packs", "Ice packs")
+        item("trail-mix", "Trail Mix"),
+        item("na-beer", "NA Beer"),
+        item("thc-stuff", "THC Stuff"),
+        item("jerky", "Jerky"),
+        item("chocolate", "Chocolate")
+      ]
+    },
+    house: {
+      title: "Stuff for the House",
+      icon: "🏠",
+      subtitle: "Rental-house odds and ends",
+      items: [
+        item("kleenex", "Kleenex")
+      ]
+    },
+    store: {
+      title: "Things to Get at the Store",
+      icon: "🛍️",
+      subtitle: "Trip supplies we still need to buy",
+      items: [
+        item("store-bug-spray", "Bug Spray"),
+        item("store-trail-snacks", "Trail Snacks")
       ]
     },
     entertainment: {
       title: "Games + Entertainment",
       icon: "🎲",
-      subtitle: "For hotel / cabin downtime",
+      subtitle: "Actual games to play with Blake's family",
       items: [
-        item("card-game", "Card game"),
-        item("board-game", "One easy travel game"),
-        item("books", "Books / manga"),
-        item("switch", "Nintendo Switch"),
-        item("switch-charger", "Switch charger"),
-        item("controllers", "Extra controller(s)"),
-        item("headphones", "Headphones / earbuds"),
-        item("downloads", "Download shows / games before leaving"),
-        item("chargers", "Device chargers")
-      ]
-    },
-    fishing: {
-      title: "Fishing?",
-      icon: "🎣",
-      subtitle: "Optional, but here if we decide yes",
-      items: [
-        item("rods", "Fishing rods + reels"),
-        item("tackle", "Tackle box"),
-        item("licenses", "Check fishing license requirements"),
-        item("bait", "Bait / lures"),
-        item("pliers", "Pliers / line cutter"),
-        item("net", "Landing net"),
-        item("fishing-hats", "Hats + sunglasses"),
-        item("fishing-bug", "Bug spray"),
-        item("fishing-sunscreen", "Sunscreen")
+        item("cards", "Playing Cards"),
+        item("escape-room", "Escape-Room Game(s)")
       ]
     },
     car: {
@@ -212,11 +218,9 @@ function defaultLists() {
         item("wallets", "Wallets / IDs"),
         item("reservation", "Hotel / lodging info saved"),
         item("phone-mount", "Phone mount"),
-        item("car-chargers", "Car chargers / cables"),
         item("drive-sunglasses", "Sunglasses"),
         item("napkins", "Napkins / wipes"),
         item("trash-bags", "Small trash bags"),
-        item("drive-cooler", "Cooler + ice packs"),
         item("roadside", "Roadside emergency kit"),
         item("gas", "Fill gas tank")
       ]
@@ -229,9 +233,7 @@ function defaultLists() {
         item("phones", "Phones"),
         item("last-wallets", "Wallets / IDs"),
         item("last-meds", "Medications"),
-        item("last-chargers", "Chargers"),
         item("last-water", "Fill water bottles"),
-        item("load-cooler", "Load cooler + cold food"),
         item("fridge", "Check fridge for trip food"),
         item("trash", "Take out trash"),
         item("doors", "Lock doors / windows"),
@@ -244,7 +246,7 @@ function defaultLists() {
 
 function defaultState() {
   return {
-    version: 1,
+    version: 2,
     trip: TRIP_LABEL,
     updatedAt: new Date().toISOString(),
     lists: defaultLists()
@@ -269,7 +271,7 @@ function mergeDefaults(saved) {
 
   const merged = {
     ...defaults,
-    ...saved,
+    updatedAt: saved.updatedAt || defaults.updatedAt,
     lists: { ...defaults.lists }
   };
 
@@ -281,20 +283,16 @@ function mergeDefaults(saved) {
     const knownIds = new Set(defaultList.items.map((entry) => entry.id));
     const items = defaultList.items.map((entry) => {
       const prior = savedById.get(entry.id);
-      return prior ? { ...entry, ...prior, text: cleanText(prior.text || entry.text), checked: Boolean(prior.checked) } : entry;
+      return prior ? { ...entry, checked: Boolean(prior.checked) } : entry;
     });
 
     for (const entry of existing.items) {
-      if (!entry?.id || knownIds.has(entry.id) || !cleanText(entry.text)) continue;
+      if (!entry?.custom || !entry.id || knownIds.has(entry.id) || !cleanText(entry.text)) continue;
       items.push({ id: entry.id, text: cleanText(entry.text), checked: Boolean(entry.checked), custom: true });
     }
 
     merged.lists[listId] = {
       ...defaultList,
-      ...existing,
-      title: existing.title || defaultList.title,
-      icon: existing.icon || defaultList.icon,
-      subtitle: existing.subtitle || defaultList.subtitle,
       items
     };
   }
@@ -313,6 +311,8 @@ async function readState(store) {
 }
 
 async function writeState(store, state) {
+  state.version = 2;
+  state.trip = TRIP_LABEL;
   state.updatedAt = new Date().toISOString();
   await store.setJSON(STATE_KEY, state);
   return state;
@@ -363,6 +363,7 @@ export default async (request) => {
           if (entry.checked) known.checked = true;
           continue;
         }
+        if (!entry?.custom) continue;
         const normalized = text.toLowerCase();
         if (existingText.has(normalized)) continue;
         list.items.push({ id: entry.id || uid(), text, checked: Boolean(entry.checked), custom: true });
