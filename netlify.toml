@@ -25,6 +25,18 @@
   to = "/.netlify/functions/packrat"
   status = 200
 
+[[redirects]]
+  from = "/packrat"
+  to = "/.netlify/functions/packrat-site"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/packrat/"
+  to = "/.netlify/functions/packrat-site"
+  status = 200
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]
