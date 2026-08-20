@@ -3,6 +3,7 @@ import { getStore } from "@netlify/blobs";
 const STORE_NAME = "packrat-shared";
 const STATE_KEY = "traverse-city-2026";
 const TRIP_LABEL = "Traverse City • Aug 23–27";
+const VALID_STATUSES = new Set(["not_packed", "staged", "packed"]);
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -12,7 +13,13 @@ const CORS_HEADERS = {
   "Content-Type": "application/json; charset=utf-8"
 };
 
-const item = (id, text) => ({ id, text, checked: false });
+const item = (id, text, options = {}) => ({
+  id,
+  text,
+  status: "not_packed",
+  checked: false,
+  ...options
+});
 
 function personalBathroom(prefix, pillsText = "Medications") {
   return [
@@ -41,216 +48,69 @@ function carBag(prefix) {
 function defaultLists() {
   return {
     jen: {
-      title: "Jen's Bag",
-      icon: "🧳",
+      title: "Parker's Bag",
+      shortTitle: "Parker",
+      section: "people",
+      kind: "packing",
       subtitle: "Clothes + personal bathroom / meds",
       items: [
-        item("jen-tops", "6 tops / T-shirts"),
-        item("jen-shorts", "2 pairs of shorts"),
-        item("jen-pants", "2 pairs of pants / jeans"),
-        item("jen-layer", "1 hoodie / sweatshirt"),
-        item("jen-underwear", "6 underwear"),
-        item("jen-socks", "5 pairs of socks"),
-        item("jen-extra-socks", "2 extra pairs of socks for hiking / wet feet"),
-        item("jen-pajamas", "Pajamas"),
-        item("jen-swimsuits", "2 swimsuits → PUT IN SWIM BAG"),
-        item("jen-rain", "Raincoat / light waterproof jacket → GIANT TOTE"),
-        item("jen-walk", "Comfortable hiking shoes → GIANT TOTE"),
-        item("jen-sandals", "Sandals"),
-        item("jen-water-shoes", "Water shoes → PUT IN SWIM BAG"),
-        item("jen-hat", "Sun hat / cap → PUT IN BEACH BAG"),
-        item("jen-sunglasses", "Sunglasses"),
-        item("jen-water-bottle", "Refillable water bottle → GIANT TOTE"),
-        ...personalBathroom("jen"),
-        item("jen-laundry", "Bag for dirty clothes")
+        item("jen-tops", "6 tops / T-shirts"), item("jen-shorts", "2 pairs of shorts"), item("jen-pants", "2 pairs of pants / jeans"), item("jen-layer", "1 hoodie / sweatshirt"), item("jen-underwear", "6 underwear"), item("jen-socks", "5 pairs of socks"), item("jen-extra-socks", "2 extra pairs of socks for hiking / wet feet"), item("jen-pajamas", "Pajamas"), item("jen-swimsuits", "2 swimsuits → PUT IN SWIM BAG"), item("jen-rain", "Raincoat / light waterproof jacket → GIANT TOTE"), item("jen-walk", "Comfortable hiking shoes → GIANT TOTE"), item("jen-sandals", "Sandals"), item("jen-water-shoes", "Water shoes → PUT IN SWIM BAG"), item("jen-hat", "Sun hat / cap → PUT IN BEACH BAG"), item("jen-sunglasses", "Sunglasses"), item("jen-water-bottle", "Refillable water bottle → GIANT TOTE"), ...personalBathroom("jen"), item("jen-laundry", "Bag for dirty clothes")
       ]
     },
     blake: {
-      title: "Blake's Bag",
-      icon: "🎒",
-      subtitle: "Clothes + personal bathroom / meds",
+      title: "Blake's Bag", shortTitle: "Blake", section: "people", kind: "packing", subtitle: "Clothes + personal bathroom / meds",
       items: [
-        item("blake-shirts", "6 shirts / T-shirts"),
-        item("blake-shorts", "2 pairs of shorts"),
-        item("blake-pants", "2 pairs of pants"),
-        item("blake-layer", "1 hoodie / sweatshirt"),
-        item("blake-underwear", "6 underwear"),
-        item("blake-socks", "5 pairs of socks"),
-        item("blake-extra-socks", "2 extra pairs of socks for hiking / wet feet"),
-        item("blake-pajamas", "Pajamas"),
-        item("blake-swimsuit", "Swimsuit → PUT IN SWIM BAG"),
-        item("blake-rain", "Raincoat / light waterproof jacket → GIANT TOTE"),
-        item("blake-walk", "Comfortable hiking shoes → GIANT TOTE"),
-        item("blake-sandals", "Sandals"),
-        item("blake-water-shoes", "Water shoes → PUT IN SWIM BAG"),
-        item("blake-hat", "Sun hat / cap → PUT IN BEACH BAG"),
-        item("blake-sunglasses", "Sunglasses"),
-        item("blake-water-bottle", "Refillable water bottle → GIANT TOTE"),
-        ...personalBathroom("blake"),
-        item("blake-laundry", "Bag for dirty clothes")
+        item("blake-shirts", "6 shirts / T-shirts"), item("blake-shorts", "2 pairs of shorts"), item("blake-pants", "2 pairs of pants"), item("blake-layer", "1 hoodie / sweatshirt"), item("blake-underwear", "6 underwear"), item("blake-socks", "5 pairs of socks"), item("blake-extra-socks", "2 extra pairs of socks for hiking / wet feet"), item("blake-pajamas", "Pajamas"), item("blake-swimsuit", "Swimsuit → PUT IN SWIM BAG"), item("blake-rain", "Raincoat / light waterproof jacket → GIANT TOTE"), item("blake-walk", "Comfortable hiking shoes → GIANT TOTE"), item("blake-sandals", "Sandals"), item("blake-water-shoes", "Water shoes → PUT IN SWIM BAG"), item("blake-hat", "Sun hat / cap → PUT IN BEACH BAG"), item("blake-sunglasses", "Sunglasses"), item("blake-water-bottle", "Refillable water bottle → GIANT TOTE"), ...personalBathroom("blake"), item("blake-laundry", "Bag for dirty clothes")
       ]
     },
     porter: {
-      title: "Porter's Bag",
-      icon: "🦧",
-      subtitle: "Synced with Porter's Traverse City checklist",
+      title: "Porter's Bag", shortTitle: "Porter", section: "people", kind: "packing", subtitle: "Synced with Porter's Traverse City checklist",
       items: [
-        item("porter-shirts", "6 T-Shirts (5 days + 1 spare)"),
-        item("porter-shorts", "2 Pairs of Shorts"),
-        item("porter-pants", "2 Pairs of Pants"),
-        item("porter-long-sleeve", "1 Long-Sleeve Shirt"),
-        item("porter-hoodie", "1 Hoodie / Sweatshirt"),
-        item("porter-underwear", "6 Underwear (5 days + 1 spare)"),
-        item("porter-socks", "5 Pairs of Socks"),
-        item("porter-extra-socks", "2 Extra Pairs of Socks for Hiking / Wet Feet"),
-        item("porter-pajamas", "Pajamas"),
-        item("porter-swimsuits", "2 Swimsuits → PUT IN SWIM BAG"),
-        item("porter-rain", "Raincoat / Light Waterproof Jacket → GIANT TOTE"),
-        item("porter-shoes", "Comfortable Hiking Shoes → GIANT TOTE"),
-        item("porter-sandals", "Sandals"),
-        item("porter-water-shoes", "Water Shoes → PUT IN SWIM BAG"),
-        item("porter-hat", "Sun Hat / Cap → PUT IN BEACH BAG"),
-        item("porter-sunglasses", "Sunglasses"),
-        item("porter-water", "Refillable Water Bottle → GIANT TOTE"),
-        item("porter-teeth", "Toothbrush + Toothpaste"),
-        item("porter-deodorant", "Deodorant"),
-        item("porter-shampoo", "Shampoo + Conditioner"),
-        item("porter-body-wash", "Body Wash / Soap"),
-        item("porter-hairbrush", "Hairbrush / Comb"),
-        item("porter-medications", "PILLS / Medications"),
-        item("porter-stuffed", "Stuffed Animal: 1 Only!"),
-        item("porter-laundry", "Bag for Dirty Clothes")
+        item("porter-shirts", "6 T-Shirts (5 days + 1 spare)"), item("porter-shorts", "2 Pairs of Shorts"), item("porter-pants", "2 Pairs of Pants"), item("porter-long-sleeve", "1 Long-Sleeve Shirt"), item("porter-hoodie", "1 Hoodie / Sweatshirt"), item("porter-underwear", "6 Underwear (5 days + 1 spare)"), item("porter-socks", "5 Pairs of Socks"), item("porter-extra-socks", "2 Extra Pairs of Socks for Hiking / Wet Feet"), item("porter-pajamas", "Pajamas"), item("porter-swimsuits", "2 Swimsuits → PUT IN SWIM BAG"), item("porter-rain", "Raincoat / Light Waterproof Jacket → GIANT TOTE"), item("porter-shoes", "Comfortable Hiking Shoes → GIANT TOTE"), item("porter-sandals", "Sandals"), item("porter-water-shoes", "Water Shoes → PUT IN SWIM BAG"), item("porter-hat", "Sun Hat / Cap → PUT IN BEACH BAG"), item("porter-sunglasses", "Sunglasses"), item("porter-water", "Refillable Water Bottle → GIANT TOTE"), item("porter-teeth", "Toothbrush + Toothpaste"), item("porter-deodorant", "Deodorant"), item("porter-shampoo", "Shampoo + Conditioner"), item("porter-body-wash", "Body Wash / Soap"), item("porter-hairbrush", "Hairbrush / Comb"), item("porter-medications", "PILLS / Medications"), item("porter-stuffed", "Stuffed Animal: 1 Only!"), item("porter-laundry", "Bag for Dirty Clothes")
       ]
     },
-    jenCar: {
-      title: "Jen's Car Bag",
-      icon: "🚗",
-      subtitle: "Keep within reach during the drive",
-      items: carBag("jen")
-    },
-    blakeCar: {
-      title: "Blake's Car Bag",
-      icon: "🚙",
-      subtitle: "Keep within reach during the drive",
-      items: carBag("blake")
-    },
-    porterCar: {
-      title: "Porter's Car Bag",
-      icon: "🦧",
-      subtitle: "Books, gaming + chargers for the drive",
-      items: carBag("porter")
-    },
+    jenCar: { title: "Parker's Car Bag", shortTitle: "Parker Car Bag", section: "loadout", kind: "packing", subtitle: "Keep within reach during the drive", items: carBag("jen") },
+    blakeCar: { title: "Blake's Car Bag", shortTitle: "Blake Car Bag", section: "loadout", kind: "packing", subtitle: "Keep within reach during the drive", items: carBag("blake") },
+    porterCar: { title: "Porter's Car Bag", shortTitle: "Porter Car Bag", section: "loadout", kind: "packing", subtitle: "Books, gaming + chargers for the drive", items: carBag("porter") },
     hiking: {
-      title: "Hiking + Outdoors",
-      icon: "🥾",
-      subtitle: "Shared check that the outdoor gear made it into the right place",
-      items: [
-        item("hiking-shoes", "Comfortable hiking shoes — Jen + Blake + Porter → GIANT TOTE"),
-        item("hiking-socks", "Extra hiking socks — Jen + Blake + Porter → PERSONAL BAGS"),
-        item("daypacks", "Day backpack"),
-        item("water-bottles", "Refillable water bottles — Jen + Blake + Porter → GIANT TOTE"),
-        item("hiking-poles", "Hiking poles"),
-        item("rain-layers", "Raincoats — Jen + Blake + Porter → GIANT TOTE"),
-        item("hats", "Sun hats / caps — Jen + Blake + Porter → BEACH BAG"),
-        item("hiking-bug", "Bug spray"),
-        item("trail-snacks", "Trail snacks"),
-        item("offline-maps", "Download offline maps"),
-        item("outdoor-first-aid", "Small first-aid kit")
-      ]
+      title: "Hiking + Outdoors", shortTitle: "Hiking", section: "shared", kind: "packing", subtitle: "Shared check that outdoor gear reached the right bag",
+      items: [item("hiking-shoes", "Comfortable hiking shoes — Parker + Blake + Porter → GIANT TOTE"), item("hiking-socks", "Extra hiking socks — Parker + Blake + Porter → PERSONAL BAGS"), item("daypacks", "Day backpack"), item("water-bottles", "Refillable water bottles — Parker + Blake + Porter → GIANT TOTE"), item("hiking-poles", "Hiking poles"), item("rain-layers", "Raincoats — Parker + Blake + Porter → GIANT TOTE"), item("hats", "Sun hats / caps — Parker + Blake + Porter → BEACH BAG"), item("hiking-bug", "Bug spray"), item("trail-snacks", "Trail snacks"), item("offline-maps", "Download offline maps"), item("outdoor-first-aid", "Small first-aid kit")]
     },
     swim: {
-      title: "Swim + Beach",
-      icon: "🏖️",
-      subtitle: "Swim Bag + Beach Bag",
-      items: [
-        item("swimsuits", "Swimsuits — Jen + Blake + Porter → SWIM BAG"),
-        item("towels", "3 Beach Towels"),
-        item("water-shoes", "Water shoes — Jen + Blake + Porter → SWIM BAG"),
-        item("beach-hats", "Sun hats / caps — Jen + Blake + Porter → BEACH BAG"),
-        item("swim-sunscreen", "Sunscreen → BEACH BAG"),
-        item("beach-bag", "Beach Bag"),
-        item("wet-bag", "Wet swimsuit bag")
-      ]
+      title: "Swim + Beach", shortTitle: "Swim + Beach", section: "shared", kind: "packing", subtitle: "Swim Bag + Beach Bag",
+      items: [item("swimsuits", "Swimsuits — Parker + Blake + Porter → SWIM BAG"), item("towels", "3 Beach Towels"), item("water-shoes", "Water shoes — Parker + Blake + Porter → SWIM BAG"), item("beach-hats", "Sun hats / caps — Parker + Blake + Porter → BEACH BAG"), item("swim-sunscreen", "Sunscreen → BEACH BAG"), item("beach-bag", "Beach Bag"), item("wet-bag", "Wet swimsuit bag")]
     },
-    food: {
-      title: "Grocery List / Food to Pack",
-      icon: "🛒",
-      subtitle: "Buy these, then make sure they leave with us",
-      items: [
-        item("trail-mix", "Trail Mix"),
-        item("na-beer", "NA Beer"),
-        item("thc-stuff", "THC Stuff"),
-        item("jerky", "Jerky"),
-        item("chocolate", "Chocolate")
-      ]
-    },
-    house: {
-      title: "Stuff for the House",
-      icon: "🏠",
-      subtitle: "Rental-house odds and ends",
-      items: [
-        item("kleenex", "Kleenex")
-      ]
-    },
-    store: {
-      title: "Things to Get at the Store",
-      icon: "🛍️",
-      subtitle: "Trip supplies we still need to buy",
-      items: [
-        item("store-bug-spray", "Bug Spray"),
-        item("store-trail-snacks", "Trail Snacks")
-      ]
-    },
-    entertainment: {
-      title: "Games + Entertainment",
-      icon: "🎲",
-      subtitle: "Actual games to play with Blake's family",
-      items: [
-        item("cards", "Playing Cards"),
-        item("escape-room", "Escape-Room Game(s)")
-      ]
-    },
+    entertainment: { title: "Games + Entertainment", shortTitle: "Games", section: "shared", kind: "packing", subtitle: "Actual games to play with family", items: [item("cards", "Playing Cards"), item("escape-room", "Escape-Room Game(s)")] },
     car: {
-      title: "Car + Drive",
-      icon: "🚙",
-      subtitle: "Madison → Traverse City",
-      items: [
-        item("wallets", "Wallets / IDs"),
-        item("reservation", "Hotel / lodging info saved"),
-        item("phone-mount", "Phone mount"),
-        item("drive-sunglasses", "Sunglasses"),
-        item("napkins", "Napkins / wipes"),
-        item("trash-bags", "Small trash bags"),
-        item("roadside", "Roadside emergency kit"),
-        item("gas", "Fill gas tank")
-      ]
+      title: "Car + Drive", shortTitle: "Car + Drive", section: "loadout", kind: "packing", subtitle: "Madison → Traverse City",
+      items: [item("wallets", "Wallets / IDs"), item("reservation", "Hotel / lodging info saved"), item("phone-mount", "Phone mount"), item("drive-sunglasses", "Sunglasses"), item("napkins", "Napkins / wipes"), item("trash-bags", "Small trash bags"), item("roadside", "Roadside emergency kit"), item("gas", "Fill gas tank")]
+    },
+    food: { title: "Grocery List / Food to Pack", shortTitle: "Food to Pack", section: "supplies", kind: "packing", subtitle: "Buy it, then make sure it leaves with us", items: [item("trail-mix", "Trail Mix"), item("na-beer", "NA Beer"), item("thc-stuff", "THC Stuff"), item("jerky", "Jerky"), item("chocolate", "Chocolate")] },
+    house: { title: "Stuff for the House", shortTitle: "House Stuff", section: "supplies", kind: "packing", subtitle: "Rental-house odds and ends", items: [item("kleenex", "Kleenex")] },
+    store: { title: "Things to Get at the Store", shortTitle: "Store Run", section: "supplies", kind: "packing", subtitle: "Trip supplies we still need to buy", items: [item("store-bug-spray", "Bug Spray"), item("store-trail-snacks", "Trail Snacks")] },
+    saturday: {
+      title: "Saturday Before We Leave", shortTitle: "Saturday Prep", section: "departure", kind: "task", subtitle: "House + car reset • Saturday, Aug 22",
+      items: [item("sat-mow", "Mow the Lawn", { assignee: "Porter" }), item("sat-weed", "Weed", { assignee: "Blake + Parker" }), item("sat-dog-poop", "Dog Poop", { assignee: "Porter" }), item("sat-guinea", "Guinea Pig Cleaning", { assignee: "Porter" }), item("sat-fridge", "Fridge", { assignee: "Parker" }), item("sat-car-wash", "Car Wash", { assignee: "Blake" }), item("sat-tire-pressure", "Tire Pressure", { assignee: "Blake" }), item("sat-trim-branch", "Trim Branch", { assignee: "Blake" }), item("sat-toilets", "Clean Toilets", { assignee: "Blake" }), item("sat-organize-packing", "Organize all Packing", { assignee: "Parker" }), item("sat-water-flowers", "Water Flowers", { assignee: "Parker" })]
     },
     lastMinute: {
-      title: "Last-Minute Grab",
-      icon: "🚪",
-      subtitle: "Do this before the car actually leaves",
-      items: [
-        item("phones", "Phones"),
-        item("last-wallets", "Wallets / IDs"),
-        item("last-meds", "Medications"),
-        item("last-water", "Fill water bottles"),
-        item("fridge", "Check fridge for trip food"),
-        item("trash", "Take out trash"),
-        item("doors", "Lock doors / windows"),
-        item("thermostat", "Set thermostat"),
-        item("final-bathroom", "Everyone use the bathroom before departure")
-      ]
+      title: "Sunday Door Check", shortTitle: "Door Check", section: "departure", kind: "task", subtitle: "Do this before the car actually leaves",
+      items: [item("phones", "Phones"), item("last-wallets", "Wallets / IDs"), item("last-meds", "Medications"), item("last-water", "Fill water bottles"), item("fridge", "Check fridge for trip food"), item("trash", "Take out trash"), item("doors", "Lock doors / windows"), item("thermostat", "Set thermostat"), item("final-bathroom", "Everyone use the bathroom before departure")]
     }
   };
 }
 
+function normalizeStatus(entry = {}) {
+  if (VALID_STATUSES.has(entry.status)) return entry.status;
+  return entry.checked ? "packed" : "not_packed";
+}
+
+function normalizeItem(entry, fallback = {}) {
+  const status = normalizeStatus(entry);
+  return { ...fallback, ...entry, text: cleanText(entry.text || fallback.text), status, checked: status === "packed" };
+}
+
 function defaultState() {
-  return {
-    version: 2,
-    trip: TRIP_LABEL,
-    updatedAt: new Date().toISOString(),
-    lists: defaultLists()
-  };
+  return { version: 3, trip: TRIP_LABEL, updatedAt: new Date().toISOString(), archived: [], lists: defaultLists() };
 }
 
 function json(payload, status = 200) {
@@ -265,38 +125,35 @@ function uid() {
   return globalThis.crypto?.randomUUID?.() || `item-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+function normalizeArchive(savedArchive) {
+  if (!Array.isArray(savedArchive)) return [];
+  return savedArchive.filter((entry) => entry && entry.item?.id && entry.listId).map((entry) => ({ ...entry, item: normalizeItem(entry.item), archivedAt: entry.archivedAt || new Date().toISOString() }));
+}
+
 function mergeDefaults(saved) {
   const defaults = defaultState();
   if (!saved || typeof saved !== "object") return defaults;
 
-  const merged = {
-    ...defaults,
-    updatedAt: saved.updatedAt || defaults.updatedAt,
-    lists: { ...defaults.lists }
-  };
+  const archived = normalizeArchive(saved.archived);
+  const archivedIds = new Set(archived.map((entry) => `${entry.listId}:${entry.item.id}`));
+  const merged = { ...defaults, updatedAt: saved.updatedAt || defaults.updatedAt, archived, lists: { ...defaults.lists } };
 
   for (const [listId, defaultList] of Object.entries(defaults.lists)) {
     const existing = saved.lists?.[listId];
-    if (!existing || !Array.isArray(existing.items)) continue;
-
-    const savedById = new Map(existing.items.filter(Boolean).map((entry) => [entry.id, entry]));
+    const existingItems = Array.isArray(existing?.items) ? existing.items : [];
+    const savedById = new Map(existingItems.filter(Boolean).map((entry) => [entry.id, entry]));
     const knownIds = new Set(defaultList.items.map((entry) => entry.id));
-    const items = defaultList.items.map((entry) => {
+    const items = defaultList.items.filter((entry) => !archivedIds.has(`${listId}:${entry.id}`)).map((entry) => {
       const prior = savedById.get(entry.id);
-      return prior ? { ...entry, checked: Boolean(prior.checked) } : entry;
+      return prior ? normalizeItem(prior, entry) : entry;
     });
-
-    for (const entry of existing.items) {
+    for (const entry of existingItems) {
       if (!entry?.custom || !entry.id || knownIds.has(entry.id) || !cleanText(entry.text)) continue;
-      items.push({ id: entry.id, text: cleanText(entry.text), checked: Boolean(entry.checked), custom: true });
+      if (archivedIds.has(`${listId}:${entry.id}`)) continue;
+      items.push(normalizeItem(entry, { custom: true }));
     }
-
-    merged.lists[listId] = {
-      ...defaultList,
-      items
-    };
+    merged.lists[listId] = { ...defaultList, items };
   }
-
   return merged;
 }
 
@@ -311,7 +168,7 @@ async function readState(store) {
 }
 
 async function writeState(store, state) {
-  state.version = 2;
+  state.version = 3;
   state.trip = TRIP_LABEL;
   state.updatedAt = new Date().toISOString();
   await store.setJSON(STATE_KEY, state);
@@ -323,30 +180,50 @@ function getList(state, listId) {
   return state.lists[listId];
 }
 
+function archiveItem(state, listId, itemId) {
+  const list = getList(state, listId);
+  if (!list) return false;
+  const index = list.items.findIndex((entry) => entry.id === itemId);
+  if (index < 0) return false;
+  const [removed] = list.items.splice(index, 1);
+  state.archived = Array.isArray(state.archived) ? state.archived : [];
+  state.archived = state.archived.filter((entry) => !(entry.listId === listId && entry.item?.id === itemId));
+  state.archived.unshift({ id: uid(), listId, listTitle: list.title, item: removed, archivedAt: new Date().toISOString() });
+  return true;
+}
+
+function restoreArchived(state, archiveId) {
+  const index = state.archived?.findIndex((entry) => entry.id === archiveId) ?? -1;
+  if (index < 0) return false;
+  const [entry] = state.archived.splice(index, 1);
+  const list = getList(state, entry.listId);
+  if (!list) return false;
+  if (!list.items.some((itemEntry) => itemEntry.id === entry.item.id)) list.items.push(normalizeItem(entry.item));
+  return true;
+}
+
 export default async (request) => {
-  if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
-  }
-
+  if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
   const store = getStore({ name: STORE_NAME, consistency: "strong" });
-
   try {
-    if (request.method === "GET") {
-      return json(await readState(store));
-    }
-
-    if (request.method !== "POST") {
-      return json({ error: "Method not allowed" }, 405);
-    }
-
+    if (request.method === "GET") return json(await readState(store));
+    if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
     const body = await request.json().catch(() => ({}));
     const action = body.action;
     const state = await readState(store);
 
-    if (action === "toggle") {
+    if (action === "status") {
       const list = getList(state, body.listId);
       const target = list?.items.find((entry) => entry.id === body.itemId);
       if (!list || !target) return json({ error: "List item not found" }, 404);
+      const status = VALID_STATUSES.has(body.status) ? body.status : "not_packed";
+      target.status = status;
+      target.checked = status === "packed";
+    } else if (action === "toggle") {
+      const list = getList(state, body.listId);
+      const target = list?.items.find((entry) => entry.id === body.itemId);
+      if (!list || !target) return json({ error: "List item not found" }, 404);
+      target.status = Boolean(body.checked) ? "packed" : "not_packed";
       target.checked = Boolean(body.checked);
     } else if (action === "bootstrapPorter") {
       const list = getList(state, "porter");
@@ -354,19 +231,18 @@ export default async (request) => {
       const incoming = Array.isArray(body.items) ? body.items : [];
       const byId = new Map(list.items.map((entry) => [entry.id, entry]));
       const existingText = new Set(list.items.map((entry) => cleanText(entry.text).toLowerCase()));
-
       for (const entry of incoming) {
         const text = cleanText(entry?.text);
         if (!text) continue;
         const known = byId.get(entry.id);
         if (known) {
-          if (entry.checked) known.checked = true;
+          if (entry.checked) { known.status = "packed"; known.checked = true; }
           continue;
         }
         if (!entry?.custom) continue;
         const normalized = text.toLowerCase();
         if (existingText.has(normalized)) continue;
-        list.items.push({ id: entry.id || uid(), text, checked: Boolean(entry.checked), custom: true });
+        list.items.push({ id: entry.id || uid(), text, status: entry.checked ? "packed" : "not_packed", checked: Boolean(entry.checked), custom: true });
         existingText.add(normalized);
       }
     } else if (action === "add") {
@@ -374,23 +250,21 @@ export default async (request) => {
       const text = cleanText(body.text);
       if (!list) return json({ error: "List not found" }, 404);
       if (!text) return json({ error: "Item text is required" }, 400);
-      list.items.push({ id: uid(), text, checked: false, custom: true });
-    } else if (action === "delete") {
-      const list = getList(state, body.listId);
-      if (!list) return json({ error: "List not found" }, 404);
-      const before = list.items.length;
-      list.items = list.items.filter((entry) => entry.id !== body.itemId);
-      if (list.items.length === before) return json({ error: "List item not found" }, 404);
+      list.items.push({ id: uid(), text, status: "not_packed", checked: false, custom: true, ...(cleanText(body.assignee) ? { assignee: cleanText(body.assignee) } : {}) });
+    } else if (action === "delete" || action === "archive") {
+      if (!archiveItem(state, body.listId, body.itemId)) return json({ error: "List item not found" }, 404);
+    } else if (action === "restore") {
+      if (!restoreArchived(state, body.archiveId)) return json({ error: "Archived item not found" }, 404);
     } else if (action === "resetList") {
       const defaults = defaultLists();
       if (!defaults[body.listId]) return json({ error: "List not found" }, 404);
       state.lists[body.listId] = defaults[body.listId];
+      state.archived = (state.archived || []).filter((entry) => entry.listId !== body.listId);
     } else if (action === "resetAll") {
       return json(await writeState(store, defaultState()));
     } else {
       return json({ error: "Unknown action" }, 400);
     }
-
     return json(await writeState(store, state));
   } catch (error) {
     console.error("PackRat API error", error);
