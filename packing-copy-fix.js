@@ -33,26 +33,24 @@
     ["porter-long-sleeve", "1 Long-Sleeve Shirt"],
     ["porter-hoodie", "1 Hoodie / Sweatshirt"],
     ["porter-underwear", "6 Underwear (5 days + 1 spare)"],
-    ["porter-socks", "7 Pairs of Socks (5 days + 2 extra for hiking / wet feet)"],
+    ["porter-socks", "5 Pairs of Socks"],
+    ["porter-extra-socks", "2 Extra Pairs of Socks for Hiking / Wet Feet"],
     ["porter-pajamas", "Pajamas"],
-    ["porter-swimsuits", "2 Swimsuits"],
-    ["porter-rain", "Raincoat / Light Waterproof Jacket"],
-    ["porter-shoes", "Hiking / Walking Shoes"],
+    ["porter-swimsuits", "2 Swimsuits → PUT IN SWIM BAG"],
+    ["porter-rain", "Raincoat / Light Waterproof Jacket → GIANT TOTE"],
+    ["porter-shoes", "Comfortable Hiking Shoes → GIANT TOTE"],
     ["porter-sandals", "Sandals"],
-    ["porter-hat", "Sun Hat / Baseball Cap"],
+    ["porter-water-shoes", "Water Shoes → PUT IN SWIM BAG"],
+    ["porter-hat", "Sun Hat / Cap → PUT IN BEACH BAG"],
     ["porter-sunglasses", "Sunglasses"],
-    ["porter-sunscreen", "Sunscreen"],
-    ["porter-bug-spray", "Bug Spray"],
-    ["porter-daypack", "Small Hiking / Day Backpack"],
-    ["porter-water", "Refillable Water Bottle"],
-    ["porter-teeth", "Toothbrush / Toothpaste"],
-    ["porter-shower", "Deodorant + Shower Stuff"],
-    ["porter-pills", "PILLS"],
-    ["porter-phone", "Phone"],
-    ["porter-chargers", "Chargers"],
-    ["porter-headphones", "Headphones / Earbuds"],
+    ["porter-water", "Refillable Water Bottle → GIANT TOTE"],
+    ["porter-teeth", "Toothbrush + Toothpaste"],
+    ["porter-deodorant", "Deodorant"],
+    ["porter-shampoo", "Shampoo + Conditioner"],
+    ["porter-body-wash", "Body Wash / Soap"],
+    ["porter-hairbrush", "Hairbrush / Comb"],
+    ["porter-medications", "PILLS / Medications"],
     ["porter-stuffed", TARGET_TEXT],
-    ["porter-book", "Book / Entertainment"],
     ["porter-laundry", "Bag for Dirty Clothes"]
   ];
 
@@ -69,21 +67,21 @@
   }
 
   function canonicalTripList(existing = []) {
-    const byText = new Map(
+    const byId = new Map(
       existing
-        .filter((entry) => entry && typeof entry.text === "string")
-        .map((entry) => [entry.text.trim().toLowerCase(), entry])
+        .filter((entry) => entry && entry.id)
+        .map((entry) => [entry.id, entry])
     );
-    const canonicalTexts = new Set(TRIP_DEFAULTS.map(([, text]) => text.toLowerCase()));
+    const canonicalIds = new Set(TRIP_DEFAULTS.map(([canonicalId]) => canonicalId));
 
     const list = TRIP_DEFAULTS.map(([canonicalId, text]) => {
-      const prior = byText.get(text.toLowerCase());
+      const prior = byId.get(canonicalId);
       return { id: canonicalId, text, checked: Boolean(prior?.checked) };
     });
 
     for (const entry of existing) {
       const text = String(entry?.text || "").trim();
-      if (!text || canonicalTexts.has(text.toLowerCase())) continue;
+      if (!entry?.custom || !text || canonicalIds.has(entry.id)) continue;
       list.push({ id: entry.id || id(), text, checked: Boolean(entry.checked), custom: true });
     }
 
@@ -172,12 +170,12 @@
   function applyCloudState(data) {
     const cloudItems = data?.lists?.porter?.items;
     if (!Array.isArray(cloudItems)) return false;
-    save(TRIP_KEY, cloudItems.map((entry) => ({
+    save(TRIP_KEY, canonicalTripList(cloudItems.map((entry) => ({
       id: entry.id || id(),
       text: String(entry.text || "").trim(),
       checked: Boolean(entry.checked),
       custom: Boolean(entry.custom)
-    })).filter((entry) => entry.text));
+    })).filter((entry) => entry.text)));
     if (tripMode) renderTrip();
     return true;
   }
@@ -278,7 +276,7 @@
     if (!view) return;
     view.querySelector(".packing-heading .scene-label").textContent = "TRAVERSE CITY • AUG 23–27";
     document.querySelector("#packingHeading").textContent = "PACK FOR 5 DAYS!";
-    view.querySelector(".packing-heading p").textContent = "Porter's own five-day list. Check each item only after it is physically in the bag.";
+    view.querySelector(".packing-heading p").textContent = "Porter's own five-day list. Items marked for the Giant Tote, Swim Bag, or Beach Bag are not done until they are physically in that bag.";
     document.querySelector("#resetPacking").textContent = "RESET TRIP LIST";
     view.querySelector(".print-note").textContent = "Porter's Traverse City packing list • Aug 23–27";
   }
