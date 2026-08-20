@@ -2,6 +2,9 @@
   const TARGET_TEXT = "Stuffed Animal: 1 Only!";
   const TRIP_KEY = "porterPacking:traversecity";
   const BAD_TRIP_MIGRATION_KEY = "porterPackingTraverseCity2026:v1";
+  const CLOUD_BOOTSTRAP_KEY = "porterPackingCloudBootstrap:v1";
+  const API_URL = "/api/packrat";
+  const POLL_MS = 4000;
 
   const SUMMER_DEFAULTS = [
     "2 T-Shirts",
@@ -24,36 +27,37 @@
   ];
 
   const TRIP_DEFAULTS = [
-    "6 T-Shirts (5 days + 1 spare)",
-    "2 Pairs of Shorts",
-    "2 Pairs of Pants",
-    "1 Long-Sleeve Shirt",
-    "1 Hoodie / Sweatshirt",
-    "6 Underwear (5 days + 1 spare)",
-    "7 Pairs of Socks (5 days + 2 extra for hiking / wet feet)",
-    "Pajamas",
-    "2 Swimsuits",
-    "Raincoat / Light Waterproof Jacket",
-    "Hiking / Walking Shoes",
-    "Sandals",
-    "Sun Hat / Baseball Cap",
-    "Sunglasses",
-    "Sunscreen",
-    "Bug Spray",
-    "Small Hiking / Day Backpack",
-    "Refillable Water Bottle",
-    "Toothbrush / Toothpaste",
-    "Deodorant + Shower Stuff",
-    "PILLS",
-    "Phone",
-    "Chargers",
-    "Headphones / Earbuds",
-    TARGET_TEXT,
-    "Book / Entertainment",
-    "Bag for Dirty Clothes"
+    ["porter-shirts", "6 T-Shirts (5 days + 1 spare)"],
+    ["porter-shorts", "2 Pairs of Shorts"],
+    ["porter-pants", "2 Pairs of Pants"],
+    ["porter-long-sleeve", "1 Long-Sleeve Shirt"],
+    ["porter-hoodie", "1 Hoodie / Sweatshirt"],
+    ["porter-underwear", "6 Underwear (5 days + 1 spare)"],
+    ["porter-socks", "7 Pairs of Socks (5 days + 2 extra for hiking / wet feet)"],
+    ["porter-pajamas", "Pajamas"],
+    ["porter-swimsuits", "2 Swimsuits"],
+    ["porter-rain", "Raincoat / Light Waterproof Jacket"],
+    ["porter-shoes", "Hiking / Walking Shoes"],
+    ["porter-sandals", "Sandals"],
+    ["porter-hat", "Sun Hat / Baseball Cap"],
+    ["porter-sunglasses", "Sunglasses"],
+    ["porter-sunscreen", "Sunscreen"],
+    ["porter-bug-spray", "Bug Spray"],
+    ["porter-daypack", "Small Hiking / Day Backpack"],
+    ["porter-water", "Refillable Water Bottle"],
+    ["porter-teeth", "Toothbrush / Toothpaste"],
+    ["porter-shower", "Deodorant + Shower Stuff"],
+    ["porter-pills", "PILLS"],
+    ["porter-phone", "Phone"],
+    ["porter-chargers", "Chargers"],
+    ["porter-headphones", "Headphones / Earbuds"],
+    ["porter-stuffed", TARGET_TEXT],
+    ["porter-book", "Book / Entertainment"],
+    ["porter-laundry", "Bag for Dirty Clothes"]
   ];
 
   let tripMode = false;
+  let syncing = false;
 
   function id() {
     if (window.crypto?.randomUUID) return window.crypto.randomUUID();
@@ -62,6 +66,28 @@
 
   function build(items) {
     return items.map((text) => ({ id: id(), text, checked: false }));
+  }
+
+  function canonicalTripList(existing = []) {
+    const byText = new Map(
+      existing
+        .filter((entry) => entry && typeof entry.text === "string")
+        .map((entry) => [entry.text.trim().toLowerCase(), entry])
+    );
+    const canonicalTexts = new Set(TRIP_DEFAULTS.map(([, text]) => text.toLowerCase()));
+
+    const list = TRIP_DEFAULTS.map(([canonicalId, text]) => {
+      const prior = byText.get(text.toLowerCase());
+      return { id: canonicalId, text, checked: Boolean(prior?.checked) };
+    });
+
+    for (const entry of existing) {
+      const text = String(entry?.text || "").trim();
+      if (!text || canonicalTexts.has(text.toLowerCase())) continue;
+      list.push({ id: entry.id || id(), text, checked: Boolean(entry.checked), custom: true });
+    }
+
+    return list;
   }
 
   function read(key) {
@@ -81,6 +107,14 @@
     } catch {
       // Keep the visible app usable even if storage is unavailable.
     }
+  }
+
+  function readFlag(key) {
+    try { return window.localStorage.getItem(key) === "true"; } catch { return false; }
+  }
+
+  function writeFlag(key) {
+    try { window.localStorage.setItem(key, "true"); } catch {}
   }
 
   function esc(value = "") {
@@ -110,7 +144,7 @@
   }
 
   function ensureTripList() {
-    if (!read(TRIP_KEY)) save(TRIP_KEY, build(TRIP_DEFAULTS));
+    save(TRIP_KEY, canonicalTripList(read(TRIP_KEY) || []));
   }
 
   function normalizeStuffedAnimalCopy() {
@@ -125,6 +159,84 @@
       });
       if (changed) save(key, updated);
     });
+  }
+
+  function setCloudStatus(message, isError = false) {
+    if (!tripMode) return;
+    const status = document.querySelector("#packingEmailStatus");
+    if (!status) return;
+    status.textContent = message;
+    status.style.color = isError ? "#9b2f2f" : "";
+  }
+
+  function applyCloudState(data) {
+    const cloudItems = data?.lists?.porter?.items;
+    if (!Array.isArray(cloudItems)) return false;
+    save(TRIP_KEY, cloudItems.map((entry) => ({
+      id: entry.id || id(),
+      text: String(entry.text || "").trim(),
+      checked: Boolean(entry.checked),
+      custom: Boolean(entry.custom)
+    })).filter((entry) => entry.text));
+    if (tripMode) renderTrip();
+    return true;
+  }
+
+  async function bootstrapCloudOnce() {
+    if (readFlag(CLOUD_BOOTSTRAP_KEY)) return;
+    const localItems = canonicalTripList(read(TRIP_KEY) || []);
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "bootstrapPorter", items: localItems })
+      });
+      if (!response.ok) throw new Error(`Bootstrap returned ${response.status}`);
+      const data = await response.json();
+      applyCloudState(data);
+      writeFlag(CLOUD_BOOTSTRAP_KEY);
+    } catch (error) {
+      console.error("Porter PackRat bootstrap failed", error);
+    }
+  }
+
+  async function syncFromCloud({ quiet = true } = {}) {
+    if (syncing) return;
+    syncing = true;
+    if (!quiet) setCloudStatus("Syncing with PackRat…");
+    try {
+      const response = await fetch(API_URL, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Sync returned ${response.status}`);
+      const data = await response.json();
+      if (applyCloudState(data)) {
+        setCloudStatus("Synced with PackRat • changes update across the family phones ✓");
+      }
+    } catch (error) {
+      console.error("Porter PackRat sync failed", error);
+      setCloudStatus("PackRat sync is offline right now. This phone still has the last saved copy.", true);
+    } finally {
+      syncing = false;
+    }
+  }
+
+  async function cloudMutate(payload) {
+    setCloudStatus("Saving to PackRat…");
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) throw new Error(`Save returned ${response.status}`);
+      const data = await response.json();
+      applyCloudState(data);
+      setCloudStatus("Saved in PackRat for everybody ✓");
+      return true;
+    } catch (error) {
+      console.error("Porter PackRat save failed", error);
+      setCloudStatus("Could not save to PackRat. Try again when the connection is back.", true);
+      return false;
+    }
   }
 
   function loadFeelingsWheel() {
@@ -182,7 +294,8 @@
   }
 
   function renderTrip() {
-    const list = read(TRIP_KEY) || build(TRIP_DEFAULTS);
+    const list = canonicalTripList(read(TRIP_KEY) || []);
+    save(TRIP_KEY, list);
     const container = document.querySelector("#packingList");
     if (!container) return;
 
@@ -203,6 +316,8 @@
         </label>
         <button type="button" class="delete-packing-item" aria-label="Remove ${esc(item.text)}">×</button>
       </div>`).join("");
+
+    setCloudStatus("Synced with PackRat • changes update across the family phones ✓");
   }
 
   function leaveTrip() {
@@ -223,6 +338,7 @@
       event.preventDefault();
       event.stopPropagation();
       renderTrip();
+      syncFromCloud({ quiet: false });
     }, true);
 
     document.querySelectorAll("[data-season]").forEach((button) => {
@@ -244,6 +360,7 @@
       item.checked = input.checked;
       save(TRIP_KEY, list);
       renderTrip();
+      cloudMutate({ action: "toggle", listId: "porter", itemId: item.id, checked: item.checked });
     }, true);
 
     listEl.addEventListener("click", (event) => {
@@ -253,8 +370,10 @@
       event.preventDefault();
       event.stopImmediatePropagation();
       const row = button.closest("[data-trip-packing-id]");
-      save(TRIP_KEY, (read(TRIP_KEY) || []).filter((item) => item.id !== row?.dataset.tripPackingId));
+      const itemId = row?.dataset.tripPackingId;
+      save(TRIP_KEY, (read(TRIP_KEY) || []).filter((item) => item.id !== itemId));
       renderTrip();
+      cloudMutate({ action: "delete", listId: "porter", itemId });
     }, true);
 
     addForm.addEventListener("submit", (event) => {
@@ -264,12 +383,8 @@
       const input = document.querySelector("#newPackingItem");
       const text = input?.value.trim();
       if (!text) return;
-      const list = read(TRIP_KEY) || [];
-      list.push({ id: id(), text, checked: false });
-      save(TRIP_KEY, list);
       input.value = "";
-      renderTrip();
-      input.focus();
+      cloudMutate({ action: "add", listId: "porter", text }).then(() => input.focus());
     }, true);
 
     resetButton.addEventListener("click", (event) => {
@@ -277,8 +392,7 @@
       event.preventDefault();
       event.stopImmediatePropagation();
       if (!window.confirm("Reset the Traverse City list to the original five-day items and uncheck everything?")) return;
-      save(TRIP_KEY, build(TRIP_DEFAULTS));
-      renderTrip();
+      cloudMutate({ action: "resetList", listId: "porter" });
     }, true);
 
     printButton.addEventListener("click", (event) => {
@@ -296,6 +410,12 @@
     addTripButton();
     bindTripControls();
     normalizeStuffedAnimalCopy();
+
+    bootstrapCloudOnce().then(() => syncFromCloud({ quiet: true }));
+    window.setInterval(() => syncFromCloud({ quiet: true }), POLL_MS);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) syncFromCloud({ quiet: true });
+    });
 
     const listEl = document.querySelector("#packingList");
     if (listEl) {
