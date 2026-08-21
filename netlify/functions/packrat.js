@@ -13,13 +13,7 @@ const CORS_HEADERS = {
   "Content-Type": "application/json; charset=utf-8"
 };
 
-const item = (id, text, options = {}) => ({
-  id,
-  text,
-  status: "not_packed",
-  checked: false,
-  ...options
-});
+const item = (id, text, options = {}) => ({ id, text, status: "not_packed", checked: false, ...options });
 
 function personalBathroom(prefix, pillsText = "Medications") {
   return [
@@ -48,11 +42,7 @@ function carBag(prefix) {
 function defaultLists() {
   return {
     jen: {
-      title: "Parker's Bag",
-      shortTitle: "Parker",
-      section: "people",
-      kind: "packing",
-      subtitle: "Clothes + personal bathroom / meds",
+      title: "Parker's Bag", shortTitle: "Parker", section: "people", kind: "packing", subtitle: "Clothes + personal bathroom / meds",
       items: [
         item("jen-tops", "6 tops / T-shirts"), item("jen-shorts", "2 pairs of shorts"), item("jen-pants", "2 pairs of pants / jeans"), item("jen-layer", "1 hoodie / sweatshirt"), item("jen-underwear", "6 underwear"), item("jen-socks", "5 pairs of socks"), item("jen-extra-socks", "2 extra pairs of socks for hiking / wet feet"), item("jen-pajamas", "Pajamas"), item("jen-swimsuits", "2 swimsuits → PUT IN SWIM BAG"), item("jen-rain", "Raincoat / light waterproof jacket → GIANT TOTE"), item("jen-walk", "Comfortable hiking shoes → GIANT TOTE"), item("jen-sandals", "Sandals"), item("jen-water-shoes", "Water shoes → PUT IN SWIM BAG"), item("jen-hat", "Sun hat / cap → PUT IN BEACH BAG"), item("jen-sunglasses", "Sunglasses"), item("jen-water-bottle", "Refillable water bottle → GIANT TOTE"), ...personalBathroom("jen"), item("jen-laundry", "Bag for dirty clothes")
       ]
@@ -88,6 +78,10 @@ function defaultLists() {
     food: { title: "Grocery List / Food to Pack", shortTitle: "Food to Pack", section: "supplies", kind: "packing", subtitle: "Buy it, then make sure it leaves with us", items: [item("trail-mix", "Trail Mix"), item("na-beer", "NA Beer"), item("thc-stuff", "THC Stuff"), item("jerky", "Jerky"), item("chocolate", "Chocolate")] },
     house: { title: "Stuff for the House", shortTitle: "House Stuff", section: "supplies", kind: "packing", subtitle: "Rental-house odds and ends", items: [item("kleenex", "Kleenex")] },
     store: { title: "Things to Get at the Store", shortTitle: "Store Run", section: "supplies", kind: "packing", subtitle: "Trip supplies we still need to buy", items: [item("store-bug-spray", "Bug Spray"), item("store-trail-snacks", "Trail Snacks")] },
+    friday: {
+      title: "Friday Evening Prep", shortTitle: "Friday Night", section: "departure", kind: "task", subtitle: "Quick decisions + setup • Friday, Aug 21",
+      items: [item("fri-laundry", "Laundry"), item("fri-snacks", "Plan road + house snacks"), item("fri-games", "Choose games to bring"), item("fri-weather", "Check Traverse City weather")]
+    },
     saturday: {
       title: "Saturday Before We Leave", shortTitle: "Saturday Prep", section: "departure", kind: "task", subtitle: "House + car reset • Saturday, Aug 22",
       items: [item("sat-mow", "Mow the Lawn", { assignee: "Porter" }), item("sat-weed", "Weed", { assignee: "Blake + Parker" }), item("sat-dog-poop", "Dog Poop", { assignee: "Porter" }), item("sat-guinea", "Guinea Pig Cleaning", { assignee: "Porter" }), item("sat-fridge", "Fridge", { assignee: "Parker" }), item("sat-car-wash", "Car Wash", { assignee: "Blake" }), item("sat-tire-pressure", "Tire Pressure", { assignee: "Blake" }), item("sat-trim-branch", "Trim Branch", { assignee: "Blake" }), item("sat-toilets", "Clean Toilets", { assignee: "Blake" }), item("sat-organize-packing", "Organize all Packing", { assignee: "Parker" }), item("sat-water-flowers", "Water Flowers", { assignee: "Parker" })]
@@ -104,21 +98,21 @@ function normalizeStatus(entry = {}) {
   return entry.checked ? "packed" : "not_packed";
 }
 
+function cleanText(value) {
+  return String(value || "").trim().slice(0, 120);
+}
+
 function normalizeItem(entry, fallback = {}) {
   const status = normalizeStatus(entry);
   return { ...fallback, ...entry, text: cleanText(entry.text || fallback.text), status, checked: status === "packed" };
 }
 
 function defaultState() {
-  return { version: 3, trip: TRIP_LABEL, updatedAt: new Date().toISOString(), archived: [], lists: defaultLists() };
+  return { version: 4, trip: TRIP_LABEL, updatedAt: new Date().toISOString(), archived: [], lists: defaultLists() };
 }
 
 function json(payload, status = 200) {
   return new Response(JSON.stringify(payload), { status, headers: CORS_HEADERS });
-}
-
-function cleanText(value) {
-  return String(value || "").trim().slice(0, 120);
 }
 
 function uid() {
@@ -168,7 +162,7 @@ async function readState(store) {
 }
 
 async function writeState(store, state) {
-  state.version = 3;
+  state.version = 4;
   state.trip = TRIP_LABEL;
   state.updatedAt = new Date().toISOString();
   await store.setJSON(STATE_KEY, state);
