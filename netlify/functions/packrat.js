@@ -219,6 +219,13 @@ export default async (request) => {
       const status = VALID_STATUSES.has(body.status) ? body.status : "not_packed";
       target.status = status;
       target.checked = status === "packed";
+    } else if (action === "edit") {
+      const list = getList(state, body.listId);
+      const target = list?.items.find((entry) => entry.id === body.itemId);
+      const text = cleanText(body.text);
+      if (!list || !target) return json({ error: "List item not found" }, 404);
+      if (!text) return json({ error: "Item text is required" }, 400);
+      target.text = text;
     } else if (action === "toggle") {
       const list = getList(state, body.listId);
       const target = list?.items.find((entry) => entry.id === body.itemId);
