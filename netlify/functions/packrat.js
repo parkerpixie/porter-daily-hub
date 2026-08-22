@@ -62,6 +62,27 @@ function defaultLists() {
     jenCar: { title: "Parker's Car Bag", shortTitle: "Parker Car Bag", section: "loadout", kind: "packing", subtitle: "Keep within reach during the drive", items: carBag("jen") },
     blakeCar: { title: "Blake's Car Bag", shortTitle: "Blake Car Bag", section: "loadout", kind: "packing", subtitle: "Keep within reach during the drive", items: carBag("blake") },
     porterCar: { title: "Porter's Car Bag", shortTitle: "Porter Car Bag", section: "loadout", kind: "packing", subtitle: "Books, gaming + chargers for the drive", items: carBag("porter") },
+    truckBags: {
+      title: "Bags to Add to the Truck", shortTitle: "Bags to Truck", section: "loadout", kind: "packing", subtitle: "Final loadout before departure",
+      items: [
+        item("truck-parker-luggage", "Parker Luggage"),
+        item("truck-blake-luggage", "Blake Luggage"),
+        item("truck-porter-luggage", "Porter Luggage"),
+        item("truck-parker-car-tote", "Parker Car Tote"),
+        item("truck-parker-laptop-tote", "Parker Laptop Tote"),
+        item("truck-car-food-bag", "Car Food Bag"),
+        item("truck-porter-backpack", "Porter backpack"),
+        item("truck-blake-duffel", "Blake Duffel"),
+        item("truck-giant-le-tote-food", "Giant LE Tote with house food"),
+        item("truck-large-le-tote-games", "Large LE Tote with games and House things"),
+        item("truck-white-lug-beverages", "Beverages in the White Lug"),
+        item("truck-hiking-poles", "Hiking Poles"),
+        item("truck-hiking-backpack", "Hiking backpack"),
+        item("truck-beach-bag", "Beach Bag"),
+        item("truck-tomatoes", "Tomatoes"),
+        item("truck-dogs-harness", "Dogs and Harness")
+      ]
+    },
     hiking: {
       title: "Hiking + Outdoors", shortTitle: "Hiking", section: "shared", kind: "packing", subtitle: "Shared check that outdoor gear reached the right bag",
       items: [item("hiking-shoes", "Comfortable hiking shoes — Parker + Blake + Porter → GIANT TOTE"), item("hiking-socks", "Extra hiking socks — Parker + Blake + Porter → PERSONAL BAGS"), item("daypacks", "Day backpack"), item("water-bottles", "Refillable water bottles — Parker + Blake + Porter → GIANT TOTE"), item("hiking-poles", "Hiking poles"), item("rain-layers", "Raincoats — Parker + Blake + Porter → GIANT TOTE"), item("hats", "Sun hats / caps — Parker + Blake + Porter → BEACH BAG"), item("hiking-bug", "Bug spray"), item("trail-snacks", "Trail snacks"), item("offline-maps", "Download offline maps"), item("outdoor-first-aid", "Small first-aid kit")]
@@ -108,7 +129,7 @@ function normalizeItem(entry, fallback = {}) {
 }
 
 function defaultState() {
-  return { version: 4, trip: TRIP_LABEL, updatedAt: new Date().toISOString(), archived: [], lists: defaultLists() };
+  return { version: 5, trip: TRIP_LABEL, updatedAt: new Date().toISOString(), archived: [], lists: defaultLists() };
 }
 
 function json(payload, status = 200) {
@@ -162,7 +183,7 @@ async function readState(store) {
 }
 
 async function writeState(store, state) {
-  state.version = 4;
+  state.version = 5;
   state.trip = TRIP_LABEL;
   state.updatedAt = new Date().toISOString();
   await store.setJSON(STATE_KEY, state);
